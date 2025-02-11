@@ -5,7 +5,7 @@ import { UserModel } from "../models/users.mjs";
 import { products } from "./mock-product.mjs";
 
 const sequelize = new Sequelize(
-  "db_products", // Nom de la DB qui doit exister
+  "db_livre", // Nom de la DB qui doit exister
   "root", // Nom de l'utilisateur
   "root", // Mot de passe de l'utilisateur
   {
@@ -25,7 +25,7 @@ let initDb = () => {
   return sequelize.sync({ force: true }).then((_) => {
     importProducts();
     importUsers();
-    console.log("La base de données db_products a bien été synchronisée");
+    console.log("La base de données db_livre a bien été synchronisée");
   });
 };
 
