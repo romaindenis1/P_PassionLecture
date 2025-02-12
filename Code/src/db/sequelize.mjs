@@ -1,54 +1,81 @@
-import { Sequelize, DataTypes } from "sequelize";
-import { ProductModel } from "../models/products.mjs";
+import { Sequelize } from "sequelize";
 import bcrypt from "bcrypt";
-import { UserModel } from "../models/users.mjs";
-import { products } from "./mock-product.mjs";
+import {
+  AuteurModel,
+  CategorieModel,
+  UtilisateurModel,
+  EditeurModel,
+  LivreModel,
+  CommenterModel,
+  ApprecierModel,
+} from "../models/structure.mjs";
+import livres from "./mock-product.mjs";
 
-const sequelize = new Sequelize(
-  "db_livre", // Nom de la DB qui doit exister
-  "root", // Nom de l'utilisateur
-  "root", // Mot de passe de l'utilisateur
-  {
-    port: 6033,
-    host: "localhost",
-    dialect: "mysql",
-    logging: false,
-  }
-);
+const sequelize = new Sequelize("db_livre", "root", "password", {
+  host: "localhost",
+  dialect: "mysql",
+  logging: false,
+});
 
-// Le modèle product
-const Product = ProductModel(sequelize, DataTypes);
-const User = UserModel(sequelize, DataTypes);
-
-//Setup db
-let initDb = () => {
-  return sequelize.sync({ force: true }).then((_) => {
-    importProducts();
-    importUsers();
+const initDb = async () => {
+  try {
+    await sequelize.sync({ force: true });
+    await importUsers();
+    await importProducts();
     console.log("La base de données db_livre a bien été synchronisée");
-  });
+  } catch (error) {
+    console.error("Erreur lors de la synchronisation de la base de données", error);
+  }
 };
 
-const importUsers = () => {
-  bcrypt
-    .hash("etml", 10) // temps pour hasher = du sel
-    .then((hash) =>
-      User.create({
-        username: "admin",
-        password: hash,
-      })
-    )
-    .then((user) => console.log(user.toJSON()));
-};
-//fait un gros map et met tout dans .create
-const importProducts = () => {
-  // import tous les produits présents dans le fichier db/mock-product
-  products.map((product) => {
-    Product.create({
-      name: product.name,
-      price: product.price,
-    }).then((product) => console.log(product.toJSON()));
-  });
+const importUsers = async () => {
+  try {
+    const hash = await bcrypt.hash("etml", 10);
+    const user = await UtilisateurModel(sequelize, Sequelize.DataTypes).create({
+      username: "admin",
+      hashedPassword: hash,
+      dateSignup: new Date(),
+      isAdmin: true,
+    });
+    console.log(user.toJSON());
+  } catch (error) {
+    console.error("Erreur lors de l'import des utilisateurs", error);
+  }
 };
 
-export { sequelize, initDb, Product, User };
+const importProducts = async () => {
+  try {
+    for (const livre of livres) {
+      const newLivre = await LivreModel(sequelize, Sequelize.DataTypes).create({
+        titre: livre.titre,
+        imageCouverturePath: livre.imageCouverturePath,
+        nbPage: livre.nbPage,
+        lien: livre.lien,
+        resume: livre.resume,
+        anneeEdition: livre.anneeEdition,
+        utilisateur_fk: livre.utilisateur_fk,
+        editeur_fk: livre.editeur_fk,
+        categorie_fk: livre.categorie_fk,
+        auteur_fk: livre.auteur_fk,
+      });
+      console.log(newLivre.toJSON());
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'import des produits", error);
+  }
+};
+
+export {
+  sequelize,
+  initDb,
+  LivreModel,
+  AuteurModel,
+  CategorieModel,
+  UtilisateurModel,
+  EditeurModel,
+  CommenterModel,
+  ApprecierModel,
+  livres,
+};
+
+export { UtilisateurModel as User };

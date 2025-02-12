@@ -1,47 +1,14 @@
 import express from "express";
-import { products } from "../db/mock-product.mjs";
+
 import { success } from "./helper.mjs";
 import { getUniqueId } from "./helper.mjs";
-import { Product } from "../db/sequelize.mjs";
+import { livres } from "../db/sequelize.mjs";
 import { ValidationError, Op } from "sequelize";
 import { auth } from "../auth/auth.mjs";
 
-const productsRouter = express();
+const livresRouter = express();
 
-/**
- * @swagger
- * /api/products/:
- *   get:
- *     tags: [Products]
- *     security:
- *       - bearerAuth: []
- *     summary: Retrieve all products.
- *     description: Retrieve all products. Can be used to populate a select HTML tag.
- *     responses:
- *       200:
- *         description: All products.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
- *                       description: The product ID.
- *                       example: 1
- *                     name:
- *                       type: string
- *                       description: The product's name.
- *                       example: Big Mac
- *                     price:
- *                       type: number
- *                       description: The product's price.
- *                       example: 5.99
- */
-productsRouter.get("/", auth, (req, res) => {
+livresRouter.get("/", auth, (req, res) => {
   if (req.query.name) {
     if (req.query.name.length < 2) {
       const message = `Le terme de la recherche doit contenir au moins 2 caractères`;
@@ -72,7 +39,7 @@ productsRouter.get("/", auth, (req, res) => {
     });
 });
 
-productsRouter.get("/:id", auth, (req, res) => {
+livresRouter.get("/:id", auth, (req, res) => {
   Product.findByPk(req.params.id)
     .then((product) => {
       if (product === null) {
@@ -90,7 +57,7 @@ productsRouter.get("/:id", auth, (req, res) => {
     });
 });
 
-productsRouter.post("/", auth, (req, res) => {
+livresRouter.post("/", auth, (req, res) => {
   Product.create(req.body)
     .then((createdProduct) => {
       const message = `Le produit ${createdProduct.name} a bien été créé !`;
@@ -103,7 +70,7 @@ productsRouter.post("/", auth, (req, res) => {
     });
 });
 
-productsRouter.delete("/:id", auth, (req, res) => {
+livresRouter.delete("/:id", auth, (req, res) => {
   Product.findByPk(req.params.id)
     .then((deletedProduct) => {
       if (deletedProduct === null) {
@@ -125,7 +92,7 @@ productsRouter.delete("/:id", auth, (req, res) => {
     });
 });
 
-productsRouter.put("/:id", auth, (req, res) => {
+livresRouter.put("/:id", auth, (req, res) => {
   const productId = req.params.id;
   Product.update(req.body, { where: { id: productId } })
     .then((_) => {
@@ -146,4 +113,4 @@ productsRouter.put("/:id", auth, (req, res) => {
     });
 });
 
-export { productsRouter };
+export { livresRouter };
