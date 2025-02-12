@@ -3,7 +3,7 @@ import { sequelize, initDb } from "./db/sequelize.mjs";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger.mjs";
 //prend la methode de products
-import { productsRouter } from "./routes/products.mjs";
+import { livresRouter } from "./routes/products.mjs";
 
 // Route pour accéder à la documentation Swagger
 //const specs = swaggerJsdoc(options);
@@ -30,7 +30,7 @@ app.use(
 );
 
 //dire que ca marche
-app.use("/api/products", productsRouter);
+app.use("/api/products", livresRouter);
 app.listen(port, () => {
   console.log(`Example app listening on port http://localhost:${port}`);
 });

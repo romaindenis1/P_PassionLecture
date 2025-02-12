@@ -3,7 +3,15 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "../db/sequelize.mjs";
 import { privateKey } from "../auth/private_key.mjs";
+import { UtilisateurModel } from "../db/sequelize.mjs";
+
+
+
 const loginRouter = express();
+
+
+
+
 loginRouter.post("/", (req, res) => {
   User.findOne({ where: { username: req.body.username } })
     .then((user) => {
