@@ -1,12 +1,14 @@
 import { Sequelize } from "sequelize";
 import bcrypt from "bcrypt";
-import { UtilisateurModel } from "../models/Utilisateur.mjs";
-import { LivreModel } from "../models/Livre.mjs";
-import { AuteurModel } from "../models/Auteur.mjs";
-import { CategorieModel } from "../models/Categorie.mjs";
-import { EditeurModel } from "../models/Editeur.mjs";
-import { ApprecierModel } from "../models/Apprecier.mjs";
-import { CommenterModel } from "../models/Commenter.mjs";
+import {
+  AuteurModel,
+  CategorieModel,
+  UtilisateurModel,
+  EditeurModel,
+  LivreModel,
+  CommenterModel,
+  ApprecierModel,
+} from "../models/structure.mjs";
 import livres from "./mock-product.mjs";
 
 const sequelize = new Sequelize("db_livre", "root", "password", {
@@ -15,18 +17,21 @@ const sequelize = new Sequelize("db_livre", "root", "password", {
   logging: false,
 });
 
-const initDb = () => {
-  return sequelize.sync({ force: true }).then(async () => {
+const initDb = async () => {
+  try {
+    await sequelize.sync({ force: true });
     await importUsers();
     await importProducts();
     console.log("La base de données db_livre a bien été synchronisée");
-  });
+  } catch (error) {
+    console.error("Erreur lors de la synchronisation de la base de données", error);
+  }
 };
 
 const importUsers = async () => {
   try {
     const hash = await bcrypt.hash("etml", 10);
-    const user = await UtilisateurModel.create({
+    const user = await UtilisateurModel(sequelize, Sequelize.DataTypes).create({
       username: "admin",
       hashedPassword: hash,
       dateSignup: new Date(),
@@ -41,7 +46,7 @@ const importUsers = async () => {
 const importProducts = async () => {
   try {
     for (const livre of livres) {
-      const newLivre = await LivreModel.create({
+      const newLivre = await LivreModel(sequelize, Sequelize.DataTypes).create({
         titre: livre.titre,
         imageCouverturePath: livre.imageCouverturePath,
         nbPage: livre.nbPage,
@@ -60,4 +65,17 @@ const importProducts = async () => {
   }
 };
 
-export { sequelize, initDb, LivreModel, AuteurModel, CategorieModel, UtilisateurModel, EditeurModel, CommenterModel, ApprecierModel, livres };
+export {
+  sequelize,
+  initDb,
+  LivreModel,
+  AuteurModel,
+  CategorieModel,
+  UtilisateurModel,
+  EditeurModel,
+  CommenterModel,
+  ApprecierModel,
+  livres,
+};
+
+export { UtilisateurModel as User };
