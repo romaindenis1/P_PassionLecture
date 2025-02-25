@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS db_livre;
+
+use db_livre;
+
 CREATE TABLE t_auteur(
    auteur_id INT AUTO_INCREMENT,
    nom VARCHAR(255) NOT NULL,
@@ -36,7 +40,7 @@ CREATE TABLE t_livre(
    nbPage INT NOT NULL,
    lien VARCHAR(255) NOT NULL,
    resume VARCHAR(3000) NOT NULL,
-   anneeEdition TINYINT NOT NULL,
+   anneeEdition SMALLINT NOT NULL,
    utilisateur_fk INT NOT NULL,
    editeur_fk INT NOT NULL,
    categorie_fk INT NOT NULL,
