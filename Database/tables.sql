@@ -49,7 +49,7 @@ CREATE TABLE t_livre(
    FOREIGN KEY(auteur_fk) REFERENCES t_auteur(auteur_id)
 );
 
-CREATE TABLE t_commenter(
+CREATE TABLE t_laisser(
    livre_fk INT,
    utilisateur_fk INT,
    contenu VARCHAR(5000) NOT NULL,
