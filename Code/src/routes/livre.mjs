@@ -18,6 +18,8 @@ livreRouter.get("/", async (req, res) => {
       order: [['createdAt', 'DESC']], // Adjust if necessary (createdAt might not be part of your model)
       limit: 5, 
     });
+    const message = "Les 5 livres ont été recuperes !"
+    res.json(success(message, books));
 
     console.log(books.map(book => book.toJSON())); // Log the books as JSON for debugging
     return res.render('index', { books }); // Render EJS view and pass books to it
