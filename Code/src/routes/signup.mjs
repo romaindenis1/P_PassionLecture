@@ -16,7 +16,7 @@ signupRouter.post("/", async (req, res) => {
     const existingUser = await User.findOne({ where: { username } });
     if (existingUser) {
       return res.status(409).json({ message: "Ce username est déjà utilisé." });
-    }
+    } 
  
     // Hacher le mot de passe avant l'enregistrement
     const hashedPassword = await bcrypt.hash(password, 10);
