@@ -54,7 +54,6 @@ const importUsers = async () => {
   }
 };
 
-
 const importProducts = () => {
   try {
     if (Array.isArray(livres)) {
@@ -79,8 +78,6 @@ const importProducts = () => {
     console.error("Erreur lors de l'import des produits", error);
   }
 };
-
-
 
 export {
   sequelize,

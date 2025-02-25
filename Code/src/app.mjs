@@ -1,12 +1,8 @@
 import express from "express";
 import { sequelize, initDb } from "./db/sequelize.mjs";
-import swaggerUi from "swagger-ui-express";
-import { swaggerSpec } from "./swagger.mjs";
 //prend la methode de products
-import { livresRouter } from "./routes/products.mjs";
+import { livreRouter } from "./routes/livre.mjs";
 
-// Route pour accéder à la documentation Swagger
-//const specs = swaggerJsdoc(options);
 
 
 const app = express();
@@ -16,28 +12,17 @@ app.use(express.json());
 
 //Default
 app.get("/", (req, res) => {
-  res.send("API REST of self service machine !");
+  res.send("base page wiorks");
 });
 
-//redirige /api/ vers localhost 3000
-app.get("/api/", (req, res) => {
-  res.redirect(`http://localhost:${port}/`);
-});
 
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, { explorer: true })
-);
-
-//dire que ca marche
-app.use("/api/products", livresRouter);
+app.use("/home", livreRouter);
 app.listen(port, () => {
   console.log(`Example app listening on port http://localhost:${port}`);
 });
 
 import { loginRouter } from "./routes/login.mjs";
-app.use("/api/login", loginRouter);
+app.use("/login", loginRouter);
 
 sequelize
   .authenticate()

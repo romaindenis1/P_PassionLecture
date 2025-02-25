@@ -49,7 +49,6 @@ const UtilisateurModel = (sequelize, DataTypes) => {
   });
 };
 
-
 // Modèle Editeur
 const EditeurModel = (sequelize, DataTypes) => {
   return sequelize.define("t_editeur", {
@@ -72,7 +71,6 @@ const LivreModel = (sequelize, DataTypes) => {
     tableName: 't_livre' 
   });
 };
-
 
 // Modèle Laisser un Commentaire
 const LaisserModel = (sequelize, DataTypes) => {

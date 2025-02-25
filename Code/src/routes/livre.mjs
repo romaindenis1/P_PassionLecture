@@ -1,45 +1,34 @@
 import express from "express";
-
+import { Sequelize } from "sequelize";
+import { LivreModel } from "../db/sequelize.mjs";
 import { success } from "./helper.mjs";
 import { getUniqueId } from "./helper.mjs";
 import { livres } from "../db/sequelize.mjs";
 import { ValidationError, Op } from "sequelize";
 import { auth } from "../auth/auth.mjs";
+import { sequelize } from "../db/sequelize.mjs";
 
-const livresRouter = express();
+const livreRouter = express();
+const Livre = LivreModel(sequelize, Sequelize.DataTypes);
 
-livresRouter.get("/", auth, (req, res) => {
-  if (req.query.name) {
-    if (req.query.name.length < 2) {
-      const message = `Le terme de la recherche doit contenir au moins 2 caractères`;
-      return res.status(400).json({ message });
-    }
-    let limit = 3;
-    if (req.query.limit) {
-      limit = parseInt(req.query.limit);
-    }
-    return Product.findAndCountAll({
-      where: { name: { [Op.like]: `%${req.query.name}%` } },
-      order: ["name"],
-      limit: limit,
-    }).then((products) => {
-      const message = `Il y a ${products.count} produits qui correspondent au terme de la recherche`;
-      res.json(success(message, products));
+livreRouter.get("/", async (req, res) => {
+  try {
+    // Query the last 5 books
+    const books = await Livre.findAll({
+      order: [['createdAt', 'DESC']], // Adjust if necessary (createdAt might not be part of your model)
+      limit: 5, 
     });
+
+    console.log(books.map(book => book.toJSON())); // Log the books as JSON for debugging
+    return res.render('index', { books }); // Render EJS view and pass books to it
+  } catch (error) {
+    console.error("Error fetching last 5 books:", error);
+    return res.status(500).json({ error: "Error fetching books" });
   }
-  Product.findAll({ order: ["name"] })
-    .then((products) => {
-      const message = "La liste des produits a bien été récupérée.";
-      res.json(success(message, products));
-    })
-    .catch((error) => {
-      const message =
-        "La liste des produits n'a pas pu être récupérée. Merci de réessayer dans quelques instants.";
-      res.status(500).json({ message, data: error });
-    });
 });
 
-livresRouter.get("/:id", auth, (req, res) => {
+
+livreRouter.get("/:id", auth, (req, res) => {
   Product.findByPk(req.params.id)
     .then((product) => {
       if (product === null) {
@@ -57,7 +46,7 @@ livresRouter.get("/:id", auth, (req, res) => {
     });
 });
 
-livresRouter.post("/", auth, (req, res) => {
+livreRouter.post("/", auth, (req, res) => {
   Product.create(req.body)
     .then((createdProduct) => {
       const message = `Le produit ${createdProduct.name} a bien été créé !`;
@@ -70,7 +59,7 @@ livresRouter.post("/", auth, (req, res) => {
     });
 });
 
-livresRouter.delete("/:id", auth, (req, res) => {
+livreRouter.delete("/:id", auth, (req, res) => {
   Product.findByPk(req.params.id)
     .then((deletedProduct) => {
       if (deletedProduct === null) {
@@ -92,7 +81,7 @@ livresRouter.delete("/:id", auth, (req, res) => {
     });
 });
 
-livresRouter.put("/:id", auth, (req, res) => {
+livreRouter.put("/:id", auth, (req, res) => {
   const productId = req.params.id;
   Product.update(req.body, { where: { id: productId } })
     .then((_) => {
@@ -113,4 +102,4 @@ livresRouter.put("/:id", auth, (req, res) => {
     });
 });
 
-export { livresRouter };
+export { livreRouter };
