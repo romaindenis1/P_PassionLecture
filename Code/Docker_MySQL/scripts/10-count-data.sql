@@ -1,2 +1,0 @@
--- compte le nombre de données insérées
--- (remplacer ce commentaire par la commande SQL adéquate)

@@ -1,2 +1,0 @@
--- Effacer la bd <db_book> si elle existe
--- (remplacer ce commentaire par la commande SQL adéquate)
