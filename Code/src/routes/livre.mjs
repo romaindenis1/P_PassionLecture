@@ -11,26 +11,26 @@ import { sequelize } from "../db/sequelize.mjs";
 const livreRouter = express();
 const Livre = LivreModel(sequelize, Sequelize.DataTypes);
 
-livreRouter.get("/", async (req, res) => {
+livreRouter.get("/:id", async (req, res) => {
   try {
-    // Query the last 5 books
-    const books = await Livre.findAll({
-      order: [['createdAt', 'DESC']], // Adjust if necessary (createdAt might not be part of your model)
-      limit: 5, 
-    });
-    const message = "Les 5 livres ont été recuperes !"
-    res.json(success(message, books));
+    const book = await Livre.findByPk(req.params.id);
+    if (book === null) {
+      const message = "Le livre demandé n'existe pas. Merci de réessayer avec un autre identifiant.";
+      return res.status(404).json({ message });
+    }
 
-    console.log(books.map(book => book.toJSON())); // Log the books as JSON for debugging
-    return res.render('index', { books }); // Render EJS view and pass books to it
+    const message = `Le livre dont l'id vaut ${book.livre_id} a bien été récupéré.`;
+    return res.json(success(message, book));
+
   } catch (error) {
-    console.error("Error fetching last 5 books:", error);
-    return res.status(500).json({ error: "Error fetching books" });
+    const message = "Le livre n'a pas pu être récupéré. Merci de réessayer dans quelques instants.";
+    return res.status(500).json({ message, data: error });
   }
 });
 
 
-livreRouter.get("/:id", auth, (req, res) => {
+
+livreRouter.get("/:id", (req, res) => {
   Product.findByPk(req.params.id)
     .then((product) => {
       if (product === null) {
@@ -48,18 +48,21 @@ livreRouter.get("/:id", auth, (req, res) => {
     });
 });
 
-livreRouter.post("/", auth, (req, res) => {
-  Product.create(req.body)
-    .then((createdProduct) => {
-      const message = `Le produit ${createdProduct.name} a bien été créé !`;
-      res.json(success(message, createdProduct));
-    })
-    .catch((error) => {
-      const message =
-        "Le produit n'a pas pu être ajouté. Merci de réessayer dans quelques instants.";
-      res.status(500).json({ message, data: error });
-    });
+livreRouter.post("/", async (req, res) => {
+  try {
+
+    const book = await Livre.create(req.body);
+
+    const message = `Le livre dont le nom est ${book.titre} a bien été créé.`;
+    return res.json(success(message, book));
+
+  } catch (error) {
+    const message =
+      "Le livre n'a pas pu être ajouté. Merci de réessayer dans quelques instants.";
+    return res.status(500).json({ message, data: error });
+  }
 });
+
 
 livreRouter.delete("/:id", auth, (req, res) => {
   Product.findByPk(req.params.id)
