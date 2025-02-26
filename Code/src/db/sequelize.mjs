@@ -80,7 +80,7 @@ const importProducts = () => {
 };
 
 export {
-  sequelize,
+  
   initDb,
   LivreModel,
   AuteurModel,
@@ -90,5 +90,6 @@ export {
   ApprecierModel,
   livres,
 };
+export {sequelize}
 
 export { Utilisateur as User };
