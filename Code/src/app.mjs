@@ -36,13 +36,12 @@ app.listen(port, async () => {
   await initDb();
 });
  
-// Middleware 404
-app.use((res) => {
-  res.status(404).json({
-    message:
-      "Impossible de trouver la ressource demandée ! Essayez une autre URL.",
-  });
+// Middleware 404 - Capture toutes les routes non trouvées
+app.use((req, res, next) => {
+  const message = "Nous n'avons pas pu trouver la page demandée.";
+  res.status(404).json({ message });
 });
+
  
 // Middleware de gestion d'erreur globale
 app.use((error, req, res, next) => {
