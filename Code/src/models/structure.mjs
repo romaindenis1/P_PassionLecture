@@ -98,20 +98,35 @@ const ApprecierModel = (sequelize, DataTypes) => {
 const defineRelations = (models) => {
   const { Auteur, Categorie, Utilisateur, Editeur, Livre, Laisser, Apprecier } = models;
 
-  // Relations Livre
-  Livre.belongsTo(Utilisateur, { foreignKey: "utilisateur_fk" });
-  Livre.belongsTo(Editeur, { foreignKey: "editeur_fk" });
-  Livre.belongsTo(Categorie, { foreignKey: "categorie_fk" });
-  Livre.belongsTo(Auteur, { foreignKey: "auteur_fk" });
+  // Relations Livre (Book)
+  Livre.belongsTo(Utilisateur, { foreignKey: "utilisateur_fk" });  
+  Utilisateur.hasMany(Livre, { foreignKey: "utilisateur_fk" }); 
+  
+  Livre.belongsTo(Editeur, { foreignKey: "editeur_fk" });  
+  Editeur.hasMany(Livre, { foreignKey: "editeur_fk" });  
+  
+  Livre.belongsTo(Categorie, { foreignKey: "categorie_fk" });  
+  Categorie.hasMany(Livre, { foreignKey: "categorie_fk" });  
+  
+  Livre.belongsTo(Auteur, { foreignKey: "auteur_fk" });  
+  Auteur.hasMany(Livre, { foreignKey: "auteur_fk" });  
 
-  // Relations Laisser un Commentaire
-  Laisser.belongsTo(Livre, { foreignKey: "livre_fk" });
-  Laisser.belongsTo(Utilisateur, { foreignKey: "utilisateur_fk" });
+  // Relations Laisser un Commentaire (Comment)
+  Laisser.belongsTo(Livre, { foreignKey: "livre_fk" }); 
+  Livre.hasMany(Laisser, { foreignKey: "livre_fk" });  
 
-  // Relations Apprécier (notation)
-  Apprecier.belongsTo(Livre, { foreignKey: "livre_fk" });
-  Apprecier.belongsTo(Utilisateur, { foreignKey: "utilisateur_fk" });
+  Laisser.belongsTo(Utilisateur, { foreignKey: "utilisateur_fk" });  
+  Utilisateur.hasMany(Laisser, { foreignKey: "utilisateur_fk" });  
+
+  // Relations Apprécier (Rating)
+  Apprecier.belongsTo(Livre, { foreignKey: "livre_fk" }); 
+  Livre.hasMany(Apprecier, { foreignKey: "livre_fk" });  
+
+  Apprecier.belongsTo(Utilisateur, { foreignKey: "utilisateur_fk" });  
+  Utilisateur.hasMany(Apprecier, { foreignKey: "utilisateur_fk" });  
 };
+
+
 
 export {
   AuteurModel,
