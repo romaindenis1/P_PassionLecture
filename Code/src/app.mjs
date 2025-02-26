@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
  
 // Routes
 app.use("/login", loginRouter);
-app.use("/home", livreRouter);
+app.use("/livres", livreRouter);
 app.use("/signup", signupRouter);
 app.use("/users", userRouter);
  
