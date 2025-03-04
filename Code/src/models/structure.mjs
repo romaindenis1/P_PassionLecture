@@ -99,14 +99,17 @@ const LivreModel = (sequelize, DataTypes) => {
 
 // Modèle Laisser un Commentaire
 const LaisserModel = (sequelize, DataTypes) => {
-  // Définir le modèle "t_laisser" avec son attribut
   return sequelize.define(
     "t_laisser",
     {
-      // Champ "contenu" obligatoire, de longueur maximale 5000
-      contenu: { type: DataTypes.STRING(5000), allowNull: false },
+      contenu: { type: DataTypes.STRING(5000), allowNull: true },
+      livre_fk: { type: DataTypes.INTEGER, allowNull: true },
+      utilisateur_fk: { type: DataTypes.INTEGER, allowNull: true },
     },
-    { timestamps: false } // Désactiver la gestion automatique des timestamps
+    {
+      timestamps: false, 
+      freezeTableName: true, 
+    }
   );
 };
 
