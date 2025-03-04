@@ -77,27 +77,25 @@ const EditeurModel = (sequelize, DataTypes) => {
 
 // Modèle Livre
 const LivreModel = (sequelize, DataTypes) => {
-  // Définir le modèle "t_livre" avec ses attributs
   return sequelize.define("t_livre", {
-    // Clé primaire auto-incrémentée "livre_id"
     livre_id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    // Champ "titre" obligatoire, de longueur maximale 255
     titre: { type: DataTypes.STRING(255), allowNull: false }, 
-    // Champ "imageCouverturePath" obligatoire, de longueur maximale 255
     imageCouverturePath: { type: DataTypes.STRING(255), allowNull: false }, 
-    // Champ "nbPage" obligatoire de type INTEGER
     nbPage: { type: DataTypes.INTEGER, allowNull: false }, 
-    // Champ "anneeEdition" obligatoire de type INTEGER
     anneeEdition: { type: DataTypes.INTEGER, allowNull: false }, 
-    // Champ "lien" facultatif, de longueur maximale 255
     lien: { type: DataTypes.STRING(255), allowNull: true }, 
-    // Champ "resume" facultatif de type TEXT
-    resume: { type: DataTypes.TEXT, allowNull: true }, 
+    resume: { type: DataTypes.TEXT, allowNull: true },
+    // Ajoutez les colonnes pour les clés étrangères
+    utilisateur_fk: { type: DataTypes.INTEGER, allowNull: true },
+    editeur_fk: { type: DataTypes.INTEGER, allowNull: true },
+    categorie_fk: { type: DataTypes.INTEGER, allowNull: true },
+    auteur_fk: { type: DataTypes.INTEGER, allowNull: true },
   }, {
-    freezeTableName: true, // Désactiver la pluralisation automatique du nom de table
-    tableName: 't_livre'     // Spécifier le nom exact de la table dans la base de données
+    freezeTableName: true,
+    tableName: 't_livre'
   });
 };
+
 
 // Modèle Laisser un Commentaire
 const LaisserModel = (sequelize, DataTypes) => {
@@ -125,43 +123,44 @@ const ApprecierModel = (sequelize, DataTypes) => {
   );
 };
 
-// Définition des relations entre les tables
 const defineRelations = (models) => {
-  // Extraire les modèles depuis l'objet models
+  // Extract the models from the models object
   const { Auteur, Categorie, Utilisateur, Editeur, Livre, Laisser, Apprecier } = models;
 
-  // Relations entre Livre et Utilisateur
-  Livre.belongsTo(Utilisateur, { foreignKey: "utilisateur_fk" });  
-  Utilisateur.hasMany(Livre, { foreignKey: "utilisateur_fk" }); 
+  // Relations between Livre and Utilisateur
+  Livre.belongsTo(Utilisateur, { foreignKey: "utilisateur_fk", targetKey: "utilisateur_id" });
+  Utilisateur.hasMany(Livre, { foreignKey: "utilisateur_fk" });
 
-  // Relations entre Livre et Editeur
-  Livre.belongsTo(Editeur, { foreignKey: "editeur_fk" });  
-  Editeur.hasMany(Livre, { foreignKey: "editeur_fk" });  
+  // Relations between Livre and Editeur
+  Livre.belongsTo(Editeur, { foreignKey: "editeur_fk", targetKey: "editeur_id" });
+  Editeur.hasMany(Livre, { foreignKey: "editeur_fk" });
 
-  // Relations entre Livre et Catégorie
-  Livre.belongsTo(Categorie, { foreignKey: "categorie_fk" });  
-  Categorie.hasMany(Livre, { foreignKey: "categorie_fk" });  
+  // Relations between Livre and Categorie
+  Livre.belongsTo(Categorie, { foreignKey: "categorie_fk", targetKey: "categorie_id" });
+  Categorie.hasMany(Livre, { foreignKey: "categorie_fk" });
 
-  // Relations entre Livre et Auteur
-  Livre.belongsTo(Auteur, { foreignKey: "auteur_fk" });  
-  Auteur.hasMany(Livre, { foreignKey: "auteur_fk" });  
+  // Relations between Livre and Auteur
+  Livre.belongsTo(Auteur, { foreignKey: "auteur_fk", targetKey: "auteur_id" });
+  Auteur.hasMany(Livre, { foreignKey: "auteur_fk" });
 
-  // Relations entre Laisser (Comment) et Livre
-  Laisser.belongsTo(Livre, { foreignKey: "livre_fk" }); 
-  Livre.hasMany(Laisser, { foreignKey: "livre_fk" });  
+  // Relations between Laisser (Comment) and Livre
+  Laisser.belongsTo(Livre, { foreignKey: "livre_fk", targetKey: "livre_id" });
+  Livre.hasMany(Laisser, { foreignKey: "livre_fk" });
 
-  // Relations entre Laisser (Comment) et Utilisateur
-  Laisser.belongsTo(Utilisateur, { foreignKey: "utilisateur_fk" });  
-  Utilisateur.hasMany(Laisser, { foreignKey: "utilisateur_fk" });  
+  // Relations between Laisser (Comment) and Utilisateur
+  Laisser.belongsTo(Utilisateur, { foreignKey: "utilisateur_fk", targetKey: "utilisateur_id" });
+  Utilisateur.hasMany(Laisser, { foreignKey: "utilisateur_fk" });
 
-  // Relations entre Apprécier (Rating) et Livre
-  Apprecier.belongsTo(Livre, { foreignKey: "livre_fk" }); 
-  Livre.hasMany(Apprecier, { foreignKey: "livre_fk" });  
+  // Relations between Apprécier (Rating) and Livre
+  Apprecier.belongsTo(Livre, { foreignKey: "livre_fk", targetKey: "livre_id" });
+  Livre.hasMany(Apprecier, { foreignKey: "livre_fk" });
 
-  // Relations entre Apprécier (Rating) et Utilisateur
-  Apprecier.belongsTo(Utilisateur, { foreignKey: "utilisateur_fk" });  
-  Utilisateur.hasMany(Apprecier, { foreignKey: "utilisateur_fk" });  
+  // Relations between Apprécier (Rating) and Utilisateur
+  Apprecier.belongsTo(Utilisateur, { foreignKey: "utilisateur_fk", targetKey: "utilisateur_id" });
+  Utilisateur.hasMany(Apprecier, { foreignKey: "utilisateur_fk" });
 };
+
+
 
 // Exporter tous les modèles et la fonction de définition des relations
 export {
