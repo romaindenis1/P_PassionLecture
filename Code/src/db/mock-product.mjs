@@ -10,6 +10,7 @@ const livres = [
     auteur_fk: 1, //autor: "Théodore Kaczynski",
     categorie_fk: 1, //categorie: "Philosophie",
     editeur_fk: 1, //editeur: "Pocket",
+    utilisateur_fk:1
   },
   {
     livre_id: 2,
@@ -22,6 +23,7 @@ const livres = [
     auteur_fk: 2, //autor: "George Orwell",
     categorie_fk: 2, //categorie: "Politique",
     editeur_fk: 1, //editeur: "Pocket",
+    utilisateur_fk:2
   },
   {
     livre_id: 3,
@@ -34,6 +36,7 @@ const livres = [
     auteur_fk: 3, //autor: "Aldous Huxley",
     categorie_fk: 3, //categorie: "Science-fiction",
     editeur_fk: 1, //editeur: "Pocket",
+    utilisateur_fk:3
   },
   {
     livre_id: 4,
@@ -46,6 +49,7 @@ const livres = [
     auteur_fk: 4, //autor: "Marc Aurèle",
     categorie_fk: 1, //categorie: "Philosophie",
     editeur_fk: 1, //editeur: "Pocket",
+    utilisateur_fk:4
   },
   {
     livre_id: 5,
@@ -58,6 +62,7 @@ const livres = [
     auteur_fk: 5, //autor: "FortniteBG Publishing",
     categorie_fk: 4, //categorie: "Dessin",
     editeur_fk: 2, //editeur: "FortniteBG Publishing",
+    utilisateur_fk:5
   },
   {
     livre_id: 6,
@@ -70,6 +75,7 @@ const livres = [
     auteur_fk: 6, //autor: "Kentaro Miura",
     categorie_fk: 5, //categorie: "Dark fantasy",
     editeur_fk: 3, //editeur: "Hakusensha",
+    utilisateur_fk:5
   
   },
   {
@@ -83,6 +89,7 @@ const livres = [
     auteur_fk: 7, //autor: "Harlan Ellison",
     categorie_fk: 3, //categorie: "Science-fiction",
     editeur_fk: 1, //editeur: "Pocket",
+    utilisateur_fk:4
   },
 ];
 
