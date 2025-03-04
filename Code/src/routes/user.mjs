@@ -1,6 +1,7 @@
 import express from "express"; // Importer le module Express
 import bcrypt from "bcrypt"; // Importer bcrypt pour le hachage de mots de passe
 import { User } from "../db/sequelize.mjs"; // Importer le modèle User depuis la base de données
+import { Livre } from "../db/sequelize.mjs";
 
 const userRouter = express.Router(); // Créer un routeur pour les routes liées aux utilisateurs
 
@@ -96,5 +97,26 @@ userRouter.delete("/", async (req, res) => {
     res.status(500).json({ message: "Une erreur est survenue.", error }); // Retourner une erreur 500
   }
 });
+
+
+userRouter.get("/:id/livres", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const livres = await Livre.findAll({ where: { utilisateur_fk: id } });
+
+    if (!livres || livres.length === 0) {
+      return res.status(404).json({ message: "Aucun livre trouvé pour cet utilisateur." });
+    }
+
+    res.json({
+      message: "Livres trouvés pour l'utilisateur.",
+      data: livres,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des livres :", error);
+    res.status(500).json({ message: "Une erreur est survenue.", error });
+  }
+});
+
 
 export { userRouter }; // Exporter le routeur pour l'utiliser dans l'application principale
