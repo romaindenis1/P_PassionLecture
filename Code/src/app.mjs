@@ -6,6 +6,7 @@ import { livreRouter } from "./routes/livre.mjs";
 import { loginRouter } from "./routes/login.mjs";
 import { signupRouter } from "./routes/signup.mjs";
 import { userRouter } from "./routes/user.mjs";
+import { categorieRouter } from "./routes/categories.mjs";
 
 const app = express();
 const port = 3000;
@@ -21,7 +22,7 @@ app.use("/login", loginRouter);
 app.use("/livres", livreRouter);
 app.use("/signup", signupRouter);
 app.use("/users", userRouter);
- 
+app.use("/categories", categorieRouter);
 // Lancement du serveur
 app.listen(port, async () => {
   console.log(`Example app listening on http://localhost:${port}`);

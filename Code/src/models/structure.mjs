@@ -15,6 +15,10 @@ const CategorieModel = (sequelize, DataTypes) => {
   return sequelize.define("t_categorie", {
     categorie_id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     libelle: { type: DataTypes.STRING, allowNull: false, unique: true },
+  },
+  {
+    tableName: 't_categories',
+    timestamps: false, 
   });
 };
 
