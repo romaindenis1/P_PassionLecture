@@ -29,7 +29,6 @@ defineRelations({
   Laisser,
   Apprecier
 });
-
 // Route GET pour récupérer tous les livres
 livreRouter.get("/", async (req, res) => {
   try {
@@ -219,5 +218,150 @@ livreRouter.delete("/:id", async (req, res) => {
     return res.status(500).json({ message: "Le livre n'a pas pu être supprimé.", data: error });
   }
 });
+
+
+
+/////////////////////////////////// ROUTES COMMENT //////////////////////////////////////
+
+livreRouter.post("/:id/comments", async (req, res) => {
+  const { contenu, utilisateur_id } = req.body;
+
+  if (!contenu || !utilisateur_id) {
+    return res.status(400).json({ message: "Le contenu et l'utilisateur_id sont nécessaires." });
+  }
+
+  try {
+    const livreId = parseInt(req.params.id, 10);
+    const book = await Livre.findByPk(livreId);
+    if (!book) {
+      return res.status(404).json({ message: "Le livre demandé n'existe pas." });
+    }
+
+    const newComment = await Laisser.create({
+      livre_fk: livreId,
+      utilisateur_fk: utilisateur_id,
+      contenu: contenu
+    });
+
+    return res.status(201).json({
+      message: "Commentaire ajouté avec succès.",
+      comment: newComment
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Le commentaire n'a pas pu être ajouté.",
+      error: error.message
+    });
+  }
+});
+
+livreRouter.get("/:id/comments", async (req, res) => {
+  const livreId = parseInt(req.params.id, 10);
+
+  try {
+    const book = await Livre.findByPk(livreId);
+    if (!book) {
+      return res.status(404).json({ message: "Le livre demandé n'existe pas." });
+    }
+
+    const comments = await Laisser.findAll({
+      where: { livre_fk: livreId },
+      include: [
+        {
+          model: Utilisateur,
+          attributes: ["username"],
+        },
+      ],
+    });
+
+    if (comments.length === 0) {
+      return res.status(404).json({ message: "Aucun commentaire trouvé pour ce livre." });
+    }
+
+    return res.status(200).json({
+      message: `Commentaires pour le livre avec l'ID ${livreId}`,
+      comments,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Une erreur est survenue lors de la récupération des commentaires.",
+      error: error.message,
+    });
+  }
+});
+
+
+////////////////////////////////// ROUTES NOTES //////////////////////////////////////
+livreRouter.get("/:id/notes", async (req, res) => {
+  const livreId = parseInt(req.params.id, 10);
+
+  try {
+    const book = await Livre.findByPk(livreId);
+    if (!book) {
+      return res.status(404).json({ message: "Le livre demandé n'existe pas." });
+    }
+
+    const ratings = await Apprecier.findAll({
+      where: { livre_fk: livreId },
+      include: [
+        {
+          model: Utilisateur,
+          attributes: ["username"],
+        },
+      ],
+    });
+
+    if (ratings.length === 0) {
+      return res.status(404).json({ message: "Aucune note trouvée pour ce livre." });
+    }
+
+    return res.status(200).json({
+      message: `Notes pour le livre avec l'ID ${livreId}`,
+      ratings,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Une erreur est survenue lors de la récupération des notes.",
+      error: error.message,
+    });
+  }
+});
+livreRouter.post("/:id/notes", async (req, res) => {
+  const { note, utilisateur_id, livre_id } = req.body;
+
+  if (note === undefined || utilisateur_id === undefined || livre_id === undefined) {
+    return res.status(400).json({ message: "La note, utilisateur_id et livre_id sont nécessaires." });
+  }
+
+  try {
+    const book = await Livre.findByPk(livre_id);
+    if (!book) {
+      return res.status(404).json({ message: "Le livre demandé n'existe pas." });
+    }
+
+    const user = await Utilisateur.findByPk(utilisateur_id);
+    if (!user) {
+      return res.status(400).json({ message: "L'utilisateur spécifié n'existe pas." });
+    }
+
+    const newRating = await Apprecier.create({
+      livre_fk: livre_id,
+      utilisateur_fk: utilisateur_id,
+      note: note
+    });
+
+    return res.status(201).json({
+      message: "Note ajoutée avec succès.",
+      rating: newRating
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "La note n'a pas pu être ajoutée.",
+      error: error.message
+    });
+  }
+});
+
+
 
 export { livreRouter }; // Exporter le routeur pour qu'il soit utilisé dans l'application principale
