@@ -1,38 +1,25 @@
-import express from "express";
+import express from "express"; // Importer le module express pour créer le routeur
+import { success } from "./helper.mjs"; // Importer la fonction success pour formater les réponses
+import { auth } from "../auth/auth.mjs"; // Importer le middleware d'authentification (non utilisé ici)
+import { sequelize } from "../db/sequelize.mjs"; // Importer l'instance de Sequelize pour la connexion à la DB
+import { Sequelize, Op, DataTypes } from "sequelize"; // Importer Sequelize, les opérateurs et DataTypes
 
+// Importer les fonctions modèles depuis le module de définition des modèles
+import { AuteurModel, CategorieModel, UtilisateurModel, EditeurModel, LivreModel } from "../db/sequelize.mjs";
+import { LaisserModel, ApprecierModel, defineRelations } from "../models/structure.mjs";
 
-import { success } from "./helper.mjs";
-import { getUniqueId } from "./helper.mjs";
-import { livres } from "../db/sequelize.mjs";
-import { ValidationError } from "sequelize";
-import { auth } from "../auth/auth.mjs";
-import { sequelize } from "../db/sequelize.mjs";
-import { Sequelize, Op, DataTypes } from "sequelize";  
+const livreRouter = express.Router(); // Créer un routeur express dédié aux routes liées aux livres
 
-import { AuteurModel } from "../db/sequelize.mjs";
-import { CategorieModel } from "../db/sequelize.mjs";
-import { UtilisateurModel } from "../db/sequelize.mjs";
-import { EditeurModel } from "../db/sequelize.mjs";
-import { LivreModel } from "../db/sequelize.mjs";
-import { LaisserModel } from "../models/structure.mjs";
-import { ApprecierModel } from "../models/structure.mjs";
+// Initialisation des modèles en appelant les fonctions modèles avec sequelize et DataTypes
+const Auteur = AuteurModel(sequelize, DataTypes); // Initialiser le modèle Auteur
+const Categorie = CategorieModel(sequelize, DataTypes); // Initialiser le modèle Catégorie
+const Utilisateur = UtilisateurModel(sequelize, DataTypes); // Initialiser le modèle Utilisateur
+const Editeur = EditeurModel(sequelize, DataTypes); // Initialiser le modèle Editeur
+const Livre = LivreModel(sequelize, DataTypes); // Initialiser le modèle Livre
+const Laisser = LaisserModel(sequelize, DataTypes); // Initialiser le modèle Laisser (commentaires)
+const Apprecier = ApprecierModel(sequelize, DataTypes); // Initialiser le modèle Apprecier (notations)
 
-import { defineRelations } from "../models/structure.mjs";
-
-
-const livreRouter = express();
-
-
-// Initialize models
-const Auteur = AuteurModel(sequelize, DataTypes);
-const Categorie = CategorieModel(sequelize, DataTypes);
-const Utilisateur = UtilisateurModel(sequelize, DataTypes);
-const Editeur = EditeurModel(sequelize, DataTypes);
-const Livre = LivreModel(sequelize, DataTypes);
-const Laisser = LaisserModel(sequelize, DataTypes);
-const Apprecier = ApprecierModel(sequelize, DataTypes);
-
-// Define relationships between models
+// Définir les relations entre les modèles en passant un objet contenant tous les modèles initialisés
 defineRelations({
   Auteur,
   Categorie,
@@ -43,119 +30,194 @@ defineRelations({
   Apprecier
 });
 
-// Get a specific book by ID
+// Route GET pour récupérer tous les livres
+livreRouter.get("/", async (req, res) => {
+  try {
+    // Rechercher tous les livres en incluant les associations Auteur et Catégorie
+    const books = await Livre.findAll({
+      include: [
+        { model: Auteur },
+        { model: Categorie }
+      ]
+    });
+
+    // Si aucun livre n'est trouvé, retourner une réponse 404
+    if (books.length === 0) {
+      return res.status(404).json({ message: "Aucun livre trouvé." });
+    }
+
+    // Retourner la liste des livres avec un message de succès
+    return res.json(success("Liste des livres récupérée avec succès.", books));
+  } catch (error) {
+    // En cas d'erreur, l'afficher dans la console et retourner une réponse 500 avec le message d'erreur
+    console.error("Erreur lors de la récupération des livres :", error);
+    return res.status(500).json({ 
+      message: "Impossible de récupérer les livres.",
+      data: error.message
+    });
+  }
+});
+
+// Route GET pour récupérer un livre spécifique par ID
 livreRouter.get("/:id", async (req, res) => {
   try {
-    const book = await Livre.findByPk(req.params.id, {
+    // Convertir l'ID reçu en entier
+    const id = parseInt(req.params.id, 10);
+    // Rechercher le livre par clé primaire en incluant les associations Auteur et Catégorie (non obligatoires)
+    const book = await Livre.findByPk(id, {
       include: [
-        { model: Auteur, required: true },
-        { model: Categorie, required: true }
+        { model: Auteur, required: false },
+        { model: Categorie, required: false }
       ]
     });
 
+    // Si le livre n'est pas trouvé, retourner une réponse 404
     if (!book) {
-      const message = "Le livre demandé n'existe pas. Merci de réessayer avec un autre identifiant.";
-      return res.status(404).json({ message });
+      return res.status(404).json({ message: "Le livre demandé n'existe pas." });
     }
 
-    const message = `Le livre dont l'id vaut ${book.livre_id} a bien été récupéré.`;
-    return res.json(success(message, book));
-
+    // Retourner le livre trouvé avec un message de succès
+    return res.json(success(`Le livre dont l'id vaut ${id} a bien été récupéré.`, book));
   } catch (error) {
-    const message = "Le livre n'a pas pu être récupéré. Merci de réessayer dans quelques instants.";
-    return res.status(500).json({ message, data: error });
+    // En cas d'erreur, l'afficher dans la console et retourner une réponse 500 avec le message d'erreur
+    console.error("Erreur lors de la récupération du livre :", error);
+    return res.status(500).json({ 
+      message: "Le livre n'a pas pu être récupéré.",
+      data: error.message 
+    });
   }
 });
 
-// Create a new book
+// Route POST pour ajouter un nouveau livre
 livreRouter.post("/", async (req, res) => {
-  const { titre, auteur, categorie, anneeEdition, id } = req.body;
-
-  // Prepare search conditions for querying
-  const whereConditions = {};
-
-  if (id) whereConditions.livre_id = id;
-  if (titre) whereConditions.titre = { [Op.iLike]: `%${titre}%` };
-  if (auteur) whereConditions['$Auteur.nom$'] = { [Op.iLike]: `%${auteur}%` };
-  if (categorie) whereConditions['$Categorie.libelle$'] = { [Op.iLike]: `%${categorie}%` };
-  if (anneeEdition) whereConditions.anneeEdition = anneeEdition;
+  // Extraire les données du corps de la requête
+  const { titre, auteur, categorie, anneeEdition, nbPage, imageCouverturePath, lien, resume } = req.body;
 
   try {
-    //Check si livre existe
+    // Vérifier si l'auteur existe dans la base, sinon le créer avec un prénom par défaut "Inconnu"
+    let auteurData = await Auteur.findOne({ where: { nom: auteur } });
+    if (!auteurData) {
+      auteurData = await Auteur.create({ nom: auteur, prenom: "Inconnu" });
+    }
+
+    // Vérifier si la catégorie existe dans la base, sinon la créer
+    let categorieData = await Categorie.findOne({ where: { libelle: categorie } });
+    if (!categorieData) {
+      categorieData = await Categorie.create({ libelle: categorie });
+    }
+
+    // Rechercher un livre similaire existant en fonction du titre et des associations auteur et catégorie
     const existingBooks = await Livre.findAll({
-      where: whereConditions,
-      include: [
-        { model: Auteur, required: true },
-        { model: Categorie, required: true }
-      ]
+      where: {
+        titre: { [Op.like]: `%${titre}%` },
+        // Utiliser les clés étrangères définies dans la relation
+        auteur_fk: auteurData.auteur_id,
+        categorie_fk: categorieData.categorie_id
+      }
     });
 
+    // Si des livres similaires sont trouvés, retourner ces livres
     if (existingBooks.length > 0) {
-      return res.json(success("Voici les livres correspondant à votre recherche:", existingBooks));
+      return res.json(success("Voici les livres correspondant à votre recherche :", existingBooks));
     }
 
-    //Creer
-    const book = await Livre.create(req.body);
-    const message = `Le livre dont le nom est ${book.titre} a bien été créé.`;
-    return res.json(success(message, book));
+    // Créer le nouveau livre avec les données fournies et les clés étrangères appropriées
+    const book = await Livre.create({
+      titre,
+      auteur_fk: auteurData.auteur_id,
+      categorie_fk: categorieData.categorie_id,
+      anneeEdition,
+      nbPage,
+      imageCouverturePath,
+      lien,
+      resume
+    });
 
+    // Retourner le livre créé avec un message de succès
+    return res.json(success(`Le livre "${book.titre}" a bien été créé.`, book));
   } catch (error) {
-    const message = "Le livre n'a pas pu être ajouté. Merci de réessayer dans quelques instants.";
-    return res.status(500).json({ message, data: error });
+    // En cas d'erreur lors de la création, l'afficher dans la console et retourner une réponse 500 avec le message d'erreur
+    console.error("Erreur lors de la création du livre :", error);
+    return res.status(500).json({ 
+      message: "Le livre n'a pas pu être ajouté.", 
+      data: error.message 
+    });
   }
 });
 
-//Patch par id
-livreRouter.put("/:id", auth, async (req, res) => {
-  const bookId = req.params.id;
+// Route PUT pour modifier un livre par ID
+livreRouter.put("/:id", async (req, res) => {
+  const bookId = req.params.id; // Récupérer l'ID du livre à modifier depuis l'URL
 
   try {
-    const [updated] = await Livre.update(req.body, { where: { livre_id: bookId } });
-
-    if (updated === 0) {
-      const message = "Le livre demandé n'existe pas. Merci de réessayer avec un autre identifiant.";
-      return res.status(404).json({ message });
+    // Vérifier si le livre existe dans la base en utilisant sa clé primaire
+    const book = await Livre.findByPk(bookId);
+    if (!book) {
+      return res.status(404).json({ message: "Le livre demandé n'existe pas." });
     }
 
+    // Si le corps de la requête contient le champ "auteur", gérer la mise à jour de l'association auteur
+    if (req.body.auteur) {
+      let auteurData = await Auteur.findOne({ where: { nom: req.body.auteur } });
+      if (!auteurData) {
+        // Créer l'auteur si non existant, avec le prénom par défaut "Inconnu"
+        auteurData = await Auteur.create({ nom: req.body.auteur, prenom: "Inconnu" });
+      }
+      req.body.auteur_fk = auteurData.auteur_id; // Ajouter la clé étrangère correspondant à l'auteur trouvé ou créé
+      delete req.body.auteur; // Supprimer le champ auteur pour éviter toute confusion
+    }
+
+    // Si le corps de la requête contient le champ "categorie", gérer la mise à jour de l'association catégorie
+    if (req.body.categorie) {
+      let categorieData = await Categorie.findOne({ where: { libelle: req.body.categorie } });
+      if (!categorieData) {
+        // Créer la catégorie si non existante
+        categorieData = await Categorie.create({ libelle: req.body.categorie });
+      }
+      req.body.categorie_fk = categorieData.categorie_id; // Ajouter la clé étrangère correspondant à la catégorie trouvée ou créée
+      delete req.body.categorie; // Supprimer le champ categorie pour éviter toute confusion
+    }
+
+    // Mettre à jour le livre avec les données modifiées du corps de la requête
+    await Livre.update(req.body, { where: { livre_id: bookId } });
+
+    // Récupérer le livre mis à jour avec ses associations (Auteur et Catégorie)
     const updatedBook = await Livre.findByPk(bookId, {
       include: [
-        { model: Auteur, required: true },
-        { model: Categorie, required: true }
+        { model: Auteur, required: false },
+        { model: Categorie, required: false }
       ]
     });
 
-    const message = `Le livre ${updatedBook.titre} dont l'id vaut ${updatedBook.livre_id} a été mis à jour avec succès.`;
-    return res.json(success(message, updatedBook));
-
+    // Retourner le livre mis à jour avec un message de succès
+    return res.json(success(`Le livre "${updatedBook.titre}" a été mis à jour avec succès.`, updatedBook));
   } catch (error) {
-    const message = "Le livre n'a pas pu être mis à jour. Merci de réessayer dans quelques instants.";
-    return res.status(500).json({ message, data: error });
+    // En cas d'erreur lors de la mise à jour, l'afficher dans la console et retourner une réponse 500 avec le message d'erreur
+    console.error("Erreur lors de la mise à jour du livre :", error);
+    return res.status(500).json({ message: "Le livre n'a pas pu être mis à jour.", data: error.message });
   }
 });
 
-//Suprimmer par id
-livreRouter.delete("/:id", auth, async (req, res) => {
+// Route DELETE pour supprimer un livre par ID
+livreRouter.delete("/:id", async (req, res) => {
   try {
+    // Rechercher le livre à supprimer par sa clé primaire
     const book = await Livre.findByPk(req.params.id);
 
+    // Si le livre n'existe pas, retourner une réponse 404
     if (!book) {
-      const message = "Le livre demandé n'existe pas. Merci de réessayer avec un autre identifiant.";
-      return res.status(404).json({ message });
+      return res.status(404).json({ message: "Le livre demandé n'existe pas." });
     }
 
-    await Livre.destroy({
-      where: { livre_id: req.params.id }
-    });
+    // Supprimer le livre en utilisant sa clé primaire
+    await Livre.destroy({ where: { livre_id: req.params.id } });
 
-    const message = `Le livre ${book.titre} a bien été supprimé !`;
-    return res.json(success(message, book));
-
+    // Retourner une réponse de succès avec le livre supprimé
+    return res.json(success(`Le livre "${book.titre}" a bien été supprimé !`, book));
   } catch (error) {
-    const message = "Le livre n'a pas pu être supprimé. Merci de réessayer dans quelques instants.";
-    return res.status(500).json({ message, data: error });
+    // En cas d'erreur lors de la suppression, retourner une réponse 500 avec le message d'erreur
+    return res.status(500).json({ message: "Le livre n'a pas pu être supprimé.", data: error });
   }
 });
 
-
-
-export { livreRouter };
+export { livreRouter }; // Exporter le routeur pour qu'il soit utilisé dans l'application principale
