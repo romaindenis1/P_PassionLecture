@@ -9,7 +9,8 @@ import {
   ApprecierModel,
 } from "../models/structure.mjs";
 import livres from "./mock-product.mjs";
-
+import categories from "./mock-category.mjs";
+import editeurs from "./mock-editor.mjs";
 const sequelize = new Sequelize(
   "db_livre", 
   "root", 
@@ -21,9 +22,10 @@ const sequelize = new Sequelize(
     logging: false,
   }
 );
-
+const Categorie = CategorieModel(sequelize, Sequelize.DataTypes);
 const Utilisateur = UtilisateurModel(sequelize, Sequelize.DataTypes);
 const Livre = LivreModel(sequelize, Sequelize.DataTypes);
+const Editeur = EditeurModel(sequelize, Sequelize.DataTypes);
 
 const initDb = async () => {
   try {
@@ -31,6 +33,8 @@ const initDb = async () => {
     await sequelize.sync({ force: true });
     await sequelize.query('SET FOREIGN_KEY_CHECKS = 1;');
     await importUsers();
+    await importCategories();
+    await importEditeurs(); 
     await importProducts();
     console.log("La base de données db_livre a bien été synchronisée");
   } catch (error) {
@@ -54,6 +58,28 @@ const importUsers = async () => {
   }
 };
 
+const importEditeurs = async () => {
+  try {
+    const result = await Editeur.bulkCreate(editeurs, {
+      validate: true,
+    });
+    console.log(`${result.length} editeurs have been successfully added.`);
+  } catch (error) {
+    console.error("Error importing editors:", error);
+  }
+};
+
+const importCategories = async () => {
+  try {
+
+    const result = await Categorie.bulkCreate(categories, {
+      validate: true, 
+    });
+    console.log(`${result.length} categories have been successfully added.`);
+  } catch (error) {
+    console.error('Error importing categories:', error);
+  }
+};
 const importProducts = () => {
   try {
     if (Array.isArray(livres)) {

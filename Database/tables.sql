@@ -5,7 +5,6 @@ use db_livre;
 CREATE TABLE t_auteur(
    auteur_id INT AUTO_INCREMENT,
    nom VARCHAR(255) NOT NULL,
-   prenom VARCHAR(255) NOT NULL,
    PRIMARY KEY(auteur_id)
 );
 
