@@ -28,11 +28,12 @@ categorieRouter.get('/', async (req, res) => {
   }
 });
 
+//Recheche by categorie
 categorieRouter.get('/:id', async (req, res) => {
     try {
-      const { id } = req.params; // Get the category id from the request parameters
+      const { id } = req.params; 
   
-      // Find the category by its id, but use the correct column name (categorie_id)
+      
       const category = await Categorie.findOne({ where: { categorie_id: id } });
   
       if (!category) {

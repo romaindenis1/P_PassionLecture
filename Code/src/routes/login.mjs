@@ -31,7 +31,7 @@ loginRouter.post("/", (req, res) => {
             message: "L'utilisateur a été connecté avec succès",
             data: user,
             token,
-          });
+                    });
         });
     })
     .catch((error) => {
