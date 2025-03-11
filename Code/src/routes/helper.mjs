@@ -1,20 +1,19 @@
-//Return un JSON
+// Retourne un objet JSON avec un message et des données
 const success = (message, data) => {
   return {
     message: message,
     data: data,
   };
 };
-const getUniqueId = (products) => {
-  // On construit un tableau d'id de produits
-  const productsIds = products.map((product) => product.id);
 
-  // La fonction passée à reduce compare deux éléments à la fois (a et b) et
-  // retourne le plus grand des deux grâce à Math.max.
-  // Au final, reduce parcourt tout le tableau productsIds, compare chaque ID
-  // avec l'ID maximal trouvé jusqu'à présent, et retourne l'ID le plus élevé,
-  // qui est stocké dans la variable maxId.
+// Calcule un nouvel ID unique à partir d'un tableau de produits
+const getUniqueId = (products) => {
+  // Crée un tableau contenant les ID de tous les produits
+  const productsIds = products.map((product) => product.id);
+  // Trouve l'ID maximum dans le tableau
   const maxId = productsIds.reduce((a, b) => Math.max(a, b));
+  // Retourne l'ID maximum + 1 pour obtenir un nouvel ID unique
   return maxId + 1;
 };
+
 export { success, getUniqueId };
