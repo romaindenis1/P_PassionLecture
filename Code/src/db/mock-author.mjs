@@ -1,3 +1,4 @@
+// Liste d'auteurs avec leur identifiant et nom
 const auteurs = [
   { auteur_id: 1, nom: "Théodore Kaczynski" },
   { auteur_id: 2, nom: "George Orwell" },
@@ -8,4 +9,5 @@ const auteurs = [
   { auteur_id: 7, nom: "Ellison Harlan" },
 ];
 
+// Export de la liste pour l'utiliser dans d'autres fichiers
 export default auteurs;
