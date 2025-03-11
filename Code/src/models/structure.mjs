@@ -13,10 +13,7 @@ const AuteurModel = (sequelize, DataTypes) => {
       },
       nom: { type: DataTypes.STRING, allowNull: false },
     },
-    {
-      freezeTableName: true,
-      timestamps: false,
-    }
+    { freezeTableName: true, timestamps: false }
   );
 };
 
@@ -89,7 +86,6 @@ const LivreModel = (sequelize, DataTypes) => {
       imageCouverturePath: { type: DataTypes.STRING(255), allowNull: false },
       nbPage: { type: DataTypes.INTEGER, allowNull: false },
       anneeEdition: { type: DataTypes.INTEGER, allowNull: false },
-      lien: { type: DataTypes.STRING(255), allowNull: true },
       resume: { type: DataTypes.TEXT, allowNull: true },
       utilisateur_fk: { type: DataTypes.INTEGER, allowNull: true },
       editeur_fk: { type: DataTypes.INTEGER, allowNull: true },

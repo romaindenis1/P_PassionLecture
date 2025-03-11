@@ -85,3 +85,4 @@ categorieRouter.get("/:id", async (req, res) => {
   }
 });
 
+export { categorieRouter }; // Exporter le routeur pour l'utiliser dans l'application

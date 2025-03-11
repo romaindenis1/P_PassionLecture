@@ -4,14 +4,14 @@ import swaggerUi from "swagger-ui-express"; // Interface web pour Swagger
 import { swaggerSpec } from "./swagger.mjs"; // Configuration Swagger définie dans un fichier externe
 import { sequelize, initDb } from "./db/sequelize.mjs"; // Instance Sequelize et fonction d'initialisation de la DB
 
-
-import { sequelize, initDb } from "./db/sequelize.mjs";
 // Importer les routeurs pour chaque ressource
 import { livreRouter } from "./routes/livre.mjs";
 import { loginRouter } from "./routes/login.mjs";
 import { signupRouter } from "./routes/signup.mjs";
 import { userRouter } from "./routes/user.mjs";
 import { categorieRouter } from "./routes/categories.mjs";
+import { auteurRouter } from "./routes/auteur.mjs";
+
 // Options Swagger pour la documentation de l'API
 const swaggerOptions = {
   definition: {
@@ -52,6 +52,7 @@ app.use("/livres", livreRouter);
 app.use("/signup", signupRouter);
 app.use("/users", userRouter);
 app.use("/categories", categorieRouter);
+app.use("/auteurs", auteurRouter);
 
 // Lancement du serveur et connexion à la DB
 app.listen(port, async () => {

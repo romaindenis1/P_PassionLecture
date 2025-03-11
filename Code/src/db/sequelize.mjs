@@ -1,6 +1,5 @@
 // Importation de Sequelize et des modèles depuis le fichier structure.mjs
 import { Sequelize } from "sequelize";
-import bcrypt from "bcrypt";
 import {
   AuteurModel,
   CategorieModel,
@@ -9,6 +8,7 @@ import {
   LivreModel,
   ApprecierModel,
   LaisserModel,
+  defineRelations,
 } from "../models/structure.mjs";
 
 // Import des données fictives (mock) pour alimenter la BDD
@@ -18,7 +18,7 @@ import editeurs from "./mock-editor.mjs";
 import auteurs from "./mock-author.mjs";
 import utilisateurs from "./mock-user.mjs";
 import commentaires from "./mock-comments.mjs";
-import notes from "./mock-note.mjs"; // Importation des notes
+import notes from "./mock-note.mjs"; // Données pour les notes
 
 // Création de l'instance Sequelize avec la configuration MySQL
 const sequelize = new Sequelize("db_livre", "root", "root", {
@@ -28,13 +28,26 @@ const sequelize = new Sequelize("db_livre", "root", "root", {
   logging: false,
 });
 
+// Initialisation des modèles avec Sequelize.DataTypes
 const Categorie = CategorieModel(sequelize, Sequelize.DataTypes);
 const Utilisateur = UtilisateurModel(sequelize, Sequelize.DataTypes);
 const Livre = LivreModel(sequelize, Sequelize.DataTypes);
 const Editeur = EditeurModel(sequelize, Sequelize.DataTypes);
 const Auteur = AuteurModel(sequelize, Sequelize.DataTypes);
 const Laisser = LaisserModel(sequelize, Sequelize.DataTypes);
-const Apprecier = ApprecierModel(sequelize, Sequelize.DataTypes); // Correction ici
+const Apprecier = ApprecierModel(sequelize, Sequelize.DataTypes);
+
+// Définition des relations entre les modèles
+const models = {
+  Auteur,
+  Categorie,
+  Utilisateur,
+  Editeur,
+  Livre,
+  Laisser,
+  Apprecier,
+};
+defineRelations(models);
 
 // Fonction d'initialisation de la base de données et d'importation des données
 const initDb = async () => {
@@ -123,9 +136,7 @@ const importNotes = async () => {
 // Importation des auteurs
 const importAuthors = async () => {
   try {
-    const result = await Auteur.bulkCreate(auteurs, {
-      validate: true,
-    });
+    const result = await Auteur.bulkCreate(auteurs, { validate: true });
     console.log(`${result.length} auteurs ont été ajoutés avec succès.`);
   } catch (error) {
     console.error("Erreur lors de l'import des auteurs:", error);
@@ -135,20 +146,17 @@ const importAuthors = async () => {
 // Importation des éditeurs
 const importEditeurs = async () => {
   try {
-    const result = await Editeur.bulkCreate(editeurs, {
-      validate: true,
-    });
+    const result = await Editeur.bulkCreate(editeurs, { validate: true });
     console.log(`${result.length} éditeurs ont été ajoutés avec succès.`);
   } catch (error) {
     console.error("Erreur lors de l'import des éditeurs:", error);
   }
 };
 
+// Importation des catégories
 const importCategories = async () => {
   try {
-    const result = await Categorie.bulkCreate(categories, {
-      validate: true,
-    });
+    const result = await Categorie.bulkCreate(categories, { validate: true });
     console.log(`${result.length} catégories ont été ajoutées avec succès.`);
   } catch (error) {
     console.error("Erreur lors de l'import des catégories:", error);
@@ -159,9 +167,7 @@ const importCategories = async () => {
 const importProducts = async () => {
   try {
     if (Array.isArray(livres)) {
-      await Livre.bulkCreate(livres, {
-        validate: true,
-      });
+      await Livre.bulkCreate(livres, { validate: true });
       console.log("Les livres ont été ajoutés avec succès.");
     } else {
       console.error("Erreur : 'livres' n'est pas un tableau", livres);
