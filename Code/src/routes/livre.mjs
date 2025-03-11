@@ -4,6 +4,8 @@ import { auth } from "../auth/auth.mjs"; // Importer le middleware d'authentific
 import { sequelize } from "../db/sequelize.mjs"; // Importer l'instance de Sequelize pour la connexion à la DB
 import { Sequelize, Op, DataTypes } from "sequelize"; // Importer Sequelize, les opérateurs et DataTypes
 
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
 // Importer les fonctions modèles depuis le module de définition des modèles
 import { AuteurModel, CategorieModel, UtilisateurModel, EditeurModel, LivreModel } from "../db/sequelize.mjs";
 import { LaisserModel, ApprecierModel, defineRelations } from "../models/structure.mjs";
@@ -362,6 +364,71 @@ livreRouter.post("/:id/notes", async (req, res) => {
   }
 });
 
-
+/**
+ * @swagger
+ * /livres:
+ *   post:
+ *     summary: Créer un nouveau livre
+ *     description: Ajoute un nouveau livre à la bibliothèque.
+ *     operationId: createBook
+ *     tags:
+ *       - Livres
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               titre:
+ *                 type: string
+ *                 description: Le titre du livre
+ *                 example: "Gatsby le Magnifique"
+ *               auteur:
+ *                 type: string
+ *                 description: L'auteur du livre
+ *                 example: "F. Scott Fitzgerald"
+ *               categorie:
+ *                 type: string
+ *                 description: La catégorie du livre
+ *                 example: "Littérature"
+ *               anneeEdition:
+ *                 type: integer
+ *                 description: L'année de publication du livre
+ *                 example: 1925
+ *               nbPage:
+ *                 type: integer
+ *                 description: Le nombre de pages du livre
+ *                 example: 218
+ *               imageCouverturePath:
+ *                 type: string
+ *                 description: Le chemin de l'image de couverture du livre
+ *                 example: "/uploads/1634108505370.jpg"
+ *               lien:
+ *                 type: string
+ *                 description: L'URL du livre
+ *                 example: "https://example.com/livre/gatsby-le-magnifique"
+ *               resume:
+ *                 type: string
+ *                 description: Un résumé du livre
+ *                 example: "Un roman racontant l'histoire de Jay Gatsby, un homme mystérieux et riche."
+ *     responses:
+ *       200:
+ *         description: Livre créé avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 titre:
+ *                   type: string
+ *                   example: "Gatsby le Magnifique"
+ *                 auteur:
+ *                   type: string
+ *                   example: "F. Scott Fitzgerald"
+ *                 categorie:
+ *                   type: string
+ *                   example: "Littérature"
+ */
 
 export { livreRouter }; // Exporter le routeur pour qu'il soit utilisé dans l'application principale

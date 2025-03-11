@@ -13,6 +13,22 @@ import { signupRouter } from "./routes/signup.mjs";
 import { userRouter } from "./routes/user.mjs";
 import { categorieRouter } from "./routes/categories.mjs";
 // Options Swagger pour la documentation de l'API
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "API Livre",
+      version: "1.0.0",
+      description: "API pour gérer une bibliothèque de livres.",
+    },
+    servers: [
+      {
+        url: `http://localhost:3000`, // URL du serveur
+      },
+    ],
+  },
+  apis: ["./routes/*.mjs"], // Chemin vers les fichiers de documentation des routes
+};
 
 const app = express();
 const port = 3000;
@@ -22,8 +38,15 @@ app.use(express.json()); // Middleware pour parser le JSON
 app.get("/", (req, res) => {
   res.send("Base page works");
 });
- 
-// Routes
+
+// Configuration de Swagger UI pour accéder à la doc
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, { explorer: true })
+);
+
+// Utilisation des routeurs pour chaque ressource
 app.use("/login", loginRouter);
 app.use("/livres", livreRouter);
 app.use("/signup", signupRouter);
