@@ -1,3 +1,4 @@
+// Importation de Sequelize et des modèles depuis le fichier structure.mjs
 import { Sequelize } from "sequelize";
 import bcrypt from "bcrypt";
 import {
@@ -9,6 +10,8 @@ import {
   ApprecierModel,
   LaisserModel,
 } from "../models/structure.mjs";
+
+// Import des données fictives (mock) pour alimenter la BDD
 import livres from "./mock-product.mjs";
 import categories from "./mock-category.mjs";
 import editeurs from "./mock-editor.mjs";
@@ -17,6 +20,7 @@ import utilisateurs from "./mock-user.mjs";
 import commentaires from "./mock-comments.mjs";
 import notes from "./mock-note.mjs"; // Importation des notes
 
+// Création de l'instance Sequelize avec la configuration MySQL
 const sequelize = new Sequelize("db_livre", "root", "root", {
   port: 6033,
   host: "localhost",
@@ -32,11 +36,17 @@ const Auteur = AuteurModel(sequelize, Sequelize.DataTypes);
 const Laisser = LaisserModel(sequelize, Sequelize.DataTypes);
 const Apprecier = ApprecierModel(sequelize, Sequelize.DataTypes); // Correction ici
 
+// Fonction d'initialisation de la base de données et d'importation des données
 const initDb = async () => {
   try {
+    // Désactivation temporaire des vérifications des clés étrangères
     await sequelize.query("SET FOREIGN_KEY_CHECKS = 0;");
+    // Synchronisation forcée (recréation des tables)
     await sequelize.sync({ force: true });
+    // Réactivation des vérifications des clés étrangères
     await sequelize.query("SET FOREIGN_KEY_CHECKS = 1;");
+
+    // Importation des données dans l'ordre logique
     await importCategories();
     await importEditeurs();
     await importUtilisateurs();
@@ -54,6 +64,7 @@ const initDb = async () => {
   }
 };
 
+// Importation des utilisateurs
 const importUtilisateurs = async () => {
   try {
     const result = await Utilisateur.bulkCreate(utilisateurs, {
@@ -65,12 +76,12 @@ const importUtilisateurs = async () => {
   }
 };
 
+// Importation des commentaires en vérifiant l'existence du livre et de l'utilisateur
 const importComments = async () => {
   try {
     for (let comment of commentaires) {
       const bookExists = await Livre.findByPk(comment.livre_id);
       const userExists = await Utilisateur.findByPk(comment.utilisateur_id);
-
       if (bookExists && userExists) {
         await Laisser.create({
           contenu: comment.contenu,
@@ -79,24 +90,23 @@ const importComments = async () => {
         });
       }
     }
-
     console.log("Les commentaires ont été ajoutés avec succès.");
   } catch (error) {
     console.error("Erreur lors de l'import des commentaires :", error);
   }
 };
 
+// Importation des notes en vérifiant l'existence du livre et de l'utilisateur
 const importNotes = async () => {
   try {
     for (let note of notes) {
       const bookExists = await Livre.findByPk(note.livre_id);
       const userExists = await Utilisateur.findByPk(note.utilisateur_id);
-
       if (bookExists && userExists) {
         await Apprecier.create({
           note: note.note,
-          livre_fk: note.livre_id, // Vérifie que la colonne dans la DB s'appelle bien "livre_fk"
-          utilisateur_fk: note.utilisateur_id, // Vérifie que la colonne dans la DB s'appelle bien "utilisateur_fk"
+          livre_fk: note.livre_id,
+          utilisateur_fk: note.utilisateur_id,
         });
       } else {
         console.warn(
@@ -110,6 +120,7 @@ const importNotes = async () => {
   }
 };
 
+// Importation des auteurs
 const importAuthors = async () => {
   try {
     const result = await Auteur.bulkCreate(auteurs, {
@@ -121,6 +132,7 @@ const importAuthors = async () => {
   }
 };
 
+// Importation des éditeurs
 const importEditeurs = async () => {
   try {
     const result = await Editeur.bulkCreate(editeurs, {
@@ -143,6 +155,7 @@ const importCategories = async () => {
   }
 };
 
+// Importation des livres
 const importProducts = async () => {
   try {
     if (Array.isArray(livres)) {
@@ -158,6 +171,7 @@ const importProducts = async () => {
   }
 };
 
+// Export des fonctions et variables utiles pour d'autres modules
 export {
   initDb,
   LivreModel,
@@ -170,5 +184,4 @@ export {
   Livre,
 };
 export { sequelize };
-
 export { Utilisateur as User };
