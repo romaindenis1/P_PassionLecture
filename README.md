@@ -1,7 +1,7 @@
 # P_WEB_295
 
 **Lieu de travail :**  
-ETML / SEBEILLON 12 / 1004 LAUSANNE
+ETML / VENNES
 
 **Chef de projet :**  
 Gregory Charmier
