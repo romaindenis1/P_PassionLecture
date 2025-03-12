@@ -18,7 +18,7 @@ const upload = multer({
   storage: storage,
   limits: { fileSize: 1 * 3840 * 2160 }, // Limite de taille en octets
   fileFilter: (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png/; // Types de fichiers acceptés
+    const fileTypes = /jpeg|jpg|png|webp/; // Types de fichiers acceptés
     const extname = fileTypes.test(
       path.extname(file.originalname).toLowerCase()
     );
@@ -26,7 +26,9 @@ const upload = multer({
     if (extname && mimeType) {
       return cb(null, true);
     }
-    cb(new Error("Seulement les fichiers JPEG, JPG, ou PNG sont autorisés"));
+    cb(
+      new Error("Seulement les fichiers JPEG, JPG webp, ou PNG sont autorisés")
+    );
   },
 });
 
