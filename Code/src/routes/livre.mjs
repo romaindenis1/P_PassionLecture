@@ -101,68 +101,77 @@ livreRouter.get("/:id", async (req, res) => {
   }
 });
 
-livreRouter.post("/", upload.single("imageCouverture"), async (req, res) => {
-  // Extraction des données du livre depuis le corps de la requête
-  const { titre, auteur, categorie, anneeEdition, nbPage, resume } = req.body;
-  const imageCouverturePath = req.file ? `/uploads/${req.file.filename}` : null; // Chemin de l'image, si fournie
+livreRouter.post(
+  "/",
+  auth,
+  upload.single("imageCouverture"),
+  async (req, res) => {
+    // Extraction des données du livre depuis le corps de la requête
+    const { titre, auteur, categorie, anneeEdition, nbPage, resume } = req.body;
+    const imageCouverturePath = req.file
+      ? `/uploads/${req.file.filename}`
+      : null; // Chemin de l'image, si fournie
 
-  try {
-    // Vérifier si l'auteur existe dans la DB, sinon le créer
-    let auteurData = await Auteur.findOne({ where: { nom: auteur } });
-    if (!auteurData) {
-      auteurData = await Auteur.create({ nom: auteur });
-    }
+    try {
+      // Vérifier si l'auteur existe dans la DB, sinon le créer
+      let auteurData = await Auteur.findOne({ where: { nom: auteur } });
+      if (!auteurData) {
+        auteurData = await Auteur.create({ nom: auteur });
+      }
 
-    // Vérifier si la catégorie existe dans la DB, sinon la créer
-    let categorieData = await Categorie.findOne({
-      where: { libelle: categorie },
-    });
-    if (!categorieData) {
-      categorieData = await Categorie.create({ libelle: categorie });
-    }
+      // Vérifier si la catégorie existe dans la DB, sinon la créer
+      let categorieData = await Categorie.findOne({
+        where: { libelle: categorie },
+      });
+      if (!categorieData) {
+        categorieData = await Categorie.create({ libelle: categorie });
+      }
 
-    // Vérifier si un livre similaire existe déjà
-    const existingBooks = await Livre.findAll({
-      where: {
-        titre: { [Op.like]: `%${titre}%` },
+      // Vérifier si un livre similaire existe déjà
+      const existingBooks = await Livre.findAll({
+        where: {
+          titre: { [Op.like]: `%${titre}%` },
+          auteur_fk: auteurData.auteur_id,
+          categorie_fk: categorieData.categorie_id,
+        },
+      });
+
+      if (existingBooks.length > 0) {
+        return res.json(
+          success(
+            "Voici les livres correspondant à votre recherche :",
+            existingBooks
+          )
+        );
+      }
+
+      // Créer le nouveau livre dans la DB
+      const book = await Livre.create({
+        titre,
         auteur_fk: auteurData.auteur_id,
         categorie_fk: categorieData.categorie_id,
-      },
-    });
+        anneeEdition,
+        nbPage,
+        imageCouverturePath, // Chemin de l'image de couverture
+        resume,
+      });
 
-    if (existingBooks.length > 0) {
+      // Retourner le livre créé avec un message de succès
       return res.json(
-        success(
-          "Voici les livres correspondant à votre recherche :",
-          existingBooks
-        )
+        success(`Le livre "${book.titre}" a bien été créé.`, book)
       );
+    } catch (error) {
+      console.error("Erreur lors de la création du livre :", error);
+      return res.status(500).json({
+        message: "Le livre n'a pas pu être ajouté.",
+        data: error.message,
+      });
     }
-
-    // Créer le nouveau livre dans la DB
-    const book = await Livre.create({
-      titre,
-      auteur_fk: auteurData.auteur_id,
-      categorie_fk: categorieData.categorie_id,
-      anneeEdition,
-      nbPage,
-      imageCouverturePath, // Chemin de l'image de couverture
-      resume,
-    });
-
-    // Retourner le livre créé avec un message de succès
-    return res.json(success(`Le livre "${book.titre}" a bien été créé.`, book));
-  } catch (error) {
-    console.error("Erreur lors de la création du livre :", error);
-    return res.status(500).json({
-      message: "Le livre n'a pas pu être ajouté.",
-      data: error.message,
-    });
   }
-});
+);
 
 // Route PUT pour modifier un livre par ID
-livreRouter.put("/:id", async (req, res) => {
+livreRouter.put("/:id", auth, async (req, res) => {
   const bookId = req.params.id; // Récupérer l'ID du livre à modifier depuis l'URL
 
   try {
@@ -225,7 +234,7 @@ livreRouter.put("/:id", async (req, res) => {
 });
 
 // Route DELETE pour supprimer un livre par ID
-livreRouter.delete("/:id", async (req, res) => {
+livreRouter.delete("/:id", auth, async (req, res) => {
   try {
     // Rechercher le livre à supprimer par sa clé primaire
     const book = await Livre.findByPk(req.params.id);
@@ -254,7 +263,7 @@ livreRouter.delete("/:id", async (req, res) => {
 
 /////////////////////////////////// ROUTES COMMENT //////////////////////////////////////
 
-livreRouter.post("/:id/comments", async (req, res) => {
+livreRouter.post("/:id/comments", auth, async (req, res) => {
   const { contenu, utilisateur_id } = req.body;
 
   if (!contenu || !utilisateur_id) {
@@ -369,7 +378,7 @@ livreRouter.get("/:id/notes", async (req, res) => {
     });
   }
 });
-livreRouter.post("/:id/notes", async (req, res) => {
+livreRouter.post("/:id/notes", auth, async (req, res) => {
   const { note, utilisateur_id, livre_id } = req.body;
 
   if (
@@ -455,10 +464,6 @@ livreRouter.post("/:id/notes", async (req, res) => {
  *                 type: string
  *                 description: Le chemin de l'image de couverture du livre
  *                 example: "/uploads/1634108505370.jpg"
- *               lien:
- *                 type: string
- *                 description: L'URL du livre
- *                 example: "https://example.com/livre/gatsby-le-magnifique"
  *               resume:
  *                 type: string
  *                 description: Un résumé du livre

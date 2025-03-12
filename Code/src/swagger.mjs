@@ -22,30 +22,6 @@ const options = {
         },
       },
       schemas: {
-        Teacher: {
-          type: "object",
-          required: ["name", "price", "created"],
-          properties: {
-            id: {
-              type: "integer",
-              description: "L'identifiant unique du produit.",
-            },
-            name: {
-              type: "string",
-              description: "Le nom du produit.",
-            },
-            price: {
-              type: "number", // Correction du type float
-              format: "float",
-              description: "Le prix du produit.",
-            },
-            created: {
-              type: "string",
-              format: "date-time",
-              description: "La date et l'heure de l'ajout d'un produit.",
-            },
-          },
-        },
         Livre: {
           type: "object",
           required: ["titre", "auteur", "categorie", "anneeEdition", "nbPage"],
@@ -79,11 +55,6 @@ const options = {
               type: "string",
               description: "Le chemin de l'image de couverture du livre",
               example: "/uploads/1634108505370.jpg",
-            },
-            lien: {
-              type: "string",
-              description: "L'URL du livre",
-              example: "https://example.com/livre/gatsby-le-magnifique",
             },
             resume: {
               type: "string",

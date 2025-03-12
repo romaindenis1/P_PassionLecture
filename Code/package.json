@@ -1,13 +1,13 @@
 {
   "name": "express.js",
   "version": "1.0.0",
-  "description": "Meow Meow",
+  "description": "Un API REST pour la gestion de un site de livres.",
   "type": "module",
   "main": "src/app.mjs",
   "scripts": {
     "start": "nodemon src/app.mjs"
   },
-  "author": "Romain Denis",
+  "author": "Romain Denis, Gonzalo Herrera, Thomas Moreira",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",

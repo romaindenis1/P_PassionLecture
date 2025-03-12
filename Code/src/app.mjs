@@ -36,7 +36,7 @@ app.use(express.json()); // Middleware pour parser le JSON
 
 // Route de base
 app.get("/", (req, res) => {
-  res.send("Base page works");
+  res.send("L'API est lancé");
 });
 
 // Configuration de Swagger UI pour accéder à la doc

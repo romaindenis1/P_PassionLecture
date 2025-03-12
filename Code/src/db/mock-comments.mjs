@@ -68,7 +68,7 @@ const commentaires = [
   {
     livre_id: 5,
     utilisateur_id: 3,
-    contenu: "How does that affect the economic value of the purvian pesos?",
+    contenu: "How does that affect the economic value of the peruvian pesos?",
   },
   {
     livre_id: 5,

@@ -2,7 +2,7 @@ import express from "express";
 import { sequelize } from "../db/sequelize.mjs";
 import { Sequelize, Op, DataTypes } from "sequelize";
 import { AuteurModel, LivreModel } from "../db/sequelize.mjs";
-
+import { auth } from "../auth/auth.mjs";
 // Création des modèles Auteur et Livre à partir de Sequelize
 const Auteur = AuteurModel(sequelize, DataTypes);
 const Livre = LivreModel(sequelize, DataTypes);
@@ -11,7 +11,7 @@ const Livre = LivreModel(sequelize, DataTypes);
 const auteurRouter = express.Router();
 
 // GET /auteurs - Récupérer tous les auteurs, avec filtre optionnel sur id et nom
-auteurRouter.get("/", async (req, res) => {
+auteurRouter.get("/", auth, async (req, res) => {
   try {
     const { id, nom } = req.query; // Récupérer les filtres éventuels
     const whereClause = {};

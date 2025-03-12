@@ -1,6 +1,3 @@
-import { DataTypes } from "sequelize"; // Pour définir les types
-import { sequelize } from "../db/sequelize.mjs"; // Instance Sequelize
-
 // Modèle Auteur
 const AuteurModel = (sequelize, DataTypes) => {
   return sequelize.define(
