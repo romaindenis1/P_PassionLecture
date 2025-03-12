@@ -189,5 +189,5 @@ export {
   livres,
   Livre,
 };
-export { sequelize };
+export { sequelize, Apprecier };
 export { Utilisateur as User };

@@ -2,7 +2,6 @@ import express from "express";
 import { sequelize } from "../db/sequelize.mjs";
 import { Sequelize, Op, DataTypes } from "sequelize";
 import { AuteurModel, LivreModel } from "../db/sequelize.mjs";
-import { auth } from "../auth/auth.mjs";
 // Création des modèles Auteur et Livre à partir de Sequelize
 const Auteur = AuteurModel(sequelize, DataTypes);
 const Livre = LivreModel(sequelize, DataTypes);
@@ -11,7 +10,7 @@ const Livre = LivreModel(sequelize, DataTypes);
 const auteurRouter = express.Router();
 
 // GET /auteurs - Récupérer tous les auteurs, avec filtre optionnel sur id et nom
-auteurRouter.get("/", auth, async (req, res) => {
+auteurRouter.get("/", async (req, res) => {
   try {
     const { id, nom } = req.query; // Récupérer les filtres éventuels
     const whereClause = {};
@@ -34,24 +33,6 @@ auteurRouter.get("/", auth, async (req, res) => {
     });
   } catch (error) {
     console.error("Erreur lors de la récupération des auteurs :", error);
-    res.status(500).json({ message: "Une erreur est survenue.", error });
-  }
-});
-
-// GET /auteurs/:id - Récupérer un auteur par son ID
-auteurRouter.get("/:id", async (req, res) => {
-  try {
-    const { id } = req.params; // Récupération de l'ID dans l'URL
-    const auteur = await Auteur.findByPk(id); // Recherche de l'auteur par clé primaire
-    if (!auteur) {
-      return res.status(404).json({ message: "Auteur non trouvé." });
-    }
-    res.json({
-      message: "Auteur récupéré avec succès.",
-      data: auteur,
-    });
-  } catch (error) {
-    console.error("Erreur lors de la récupération de l'auteur :", error);
     res.status(500).json({ message: "Une erreur est survenue.", error });
   }
 });

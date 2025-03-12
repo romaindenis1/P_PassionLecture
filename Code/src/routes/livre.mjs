@@ -246,6 +246,9 @@ livreRouter.delete("/:id", auth, async (req, res) => {
         .json({ message: "Le livre demandé n'existe pas." });
     }
 
+    // Supprimer les enregistrements dépendants dans t_apprecier
+    await Apprecier.destroy({ where: { livre_fk: book.livre_id } });
+
     // Supprimer le livre en utilisant sa clé primaire
     await Livre.destroy({ where: { livre_id: req.params.id } });
 

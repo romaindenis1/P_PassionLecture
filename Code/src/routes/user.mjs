@@ -2,6 +2,7 @@ import express from "express"; // Importer Express pour créer le routeur
 import bcrypt from "bcrypt"; // Importer bcrypt pour hacher les mots de passe
 import { User } from "../db/sequelize.mjs"; // Importer le modèle User depuis la base de données
 import { Livre } from "../db/sequelize.mjs"; // Importer le modèle Livre
+import { Apprecier } from "../db/sequelize.mjs"; // Importer le modèle Livre
 
 const userRouter = express.Router(); // Créer un routeur pour les routes utilisateurs
 
@@ -34,11 +35,9 @@ userRouter.put("/", async (req, res) => {
   try {
     const { id, username, password } = req.body;
     if (!id) {
-      return res
-        .status(400)
-        .json({
-          message: "L'ID de l'utilisateur est requis pour la mise à jour.",
-        });
+      return res.status(400).json({
+        message: "L'ID de l'utilisateur est requis pour la mise à jour.",
+      });
     }
 
     const user = await User.findByPk(id);
@@ -62,11 +61,9 @@ userRouter.delete("/", async (req, res) => {
   try {
     const { id, username } = req.query;
     if (!id && !username) {
-      return res
-        .status(400)
-        .json({
-          message: "Un ID ou un username est requis pour la suppression.",
-        });
+      return res.status(400).json({
+        message: "Un ID ou un username est requis pour la suppression.",
+      });
     }
 
     const whereClause = id ? { utilisateur_id: id } : { username };
@@ -75,8 +72,14 @@ userRouter.delete("/", async (req, res) => {
       return res.status(404).json({ message: "Utilisateur non trouvé." });
     }
 
+    // Supprimer d'abord les enregistrements dépendants dans t_apprecier
+    await Apprecier.destroy({ where: { utilisateur_fk: user.utilisateur_id } });
+
+    // Maintenant, supprimer l'utilisateur
     await user.destroy();
-    res.json({ message: "Utilisateur supprimé avec succès." });
+    res.json({
+      message: "Utilisateur et ses notations supprimés avec succès.",
+    });
   } catch (error) {
     console.error("Erreur lors de la suppression :", error);
     res.status(500).json({ message: "Une erreur est survenue.", error });
