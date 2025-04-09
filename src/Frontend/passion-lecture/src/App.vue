@@ -5,8 +5,8 @@ import { RouterLink, RouterView } from 'vue-router'
 <template>
   <header>
     <div class="wrapper">
-     <nav>
-        <RouterLink to="book-list">Home</RouterLink>
+      <nav>
+        <RouterLink :to="{ name: 'book-list' }">Home</RouterLink>
       </nav>
     </div>
   </header>
