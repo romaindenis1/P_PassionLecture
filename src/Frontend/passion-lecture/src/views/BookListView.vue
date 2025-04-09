@@ -17,11 +17,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <h1>Top 5 Books</h1>
-  <div class="book">
-    <EventCard v-for="book in books" :key="book.id" :book="book" />
-  </div>
-</template>
+    <h1>Top 5 Books</h1>
+    <div v-if="books > 0" class="books">
+      <BookCard v-for="book in books" :key="book.id" :book="book" />
+    </div>
+    <div v-else>
+      Loading books...
+    </div>
+  </template>
+  
 
 <style scoped>
 .books {
