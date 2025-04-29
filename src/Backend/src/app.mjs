@@ -62,6 +62,8 @@ app.use("/users", userRouter);
 app.use("/categories", categorieRouter);
 app.use("/auteurs", auteurRouter);
 
+app.use("/uploads", express.static("uploads"));
+
 // Lancement du serveur et connexion à la DB
 app.listen(port, async () => {
   console.log(`Example app listening on http://localhost:${port}`);

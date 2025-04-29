@@ -1,4 +1,3 @@
-<!-- frontend/src/views/HelloFromBackend.vue -->
 <script setup>
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
