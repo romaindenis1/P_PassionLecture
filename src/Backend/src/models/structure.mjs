@@ -298,6 +298,7 @@ const defineRelations = (models) => {
   Livre.belongsTo(Categorie, {
     foreignKey: "categorie_fk",
     targetKey: "categorie_id",
+    as: "categorie",
   });
   Categorie.hasMany(Livre, { foreignKey: "categorie_fk" });
 
