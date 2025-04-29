@@ -3,18 +3,13 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <div id="app">
-    <header>
-      <div class="wrapper">
-        <nav>
-          <RouterLink :to="{ name: 'book-list' }">Home</RouterLink>
-        </nav>
-      </div>
-    </header>
-    <main>
-      <router-view />
-    </main>
-  </div>
+  <header>
+    <div class="wrapper">
+     <nav>
+        <RouterLink to="book-list">Home</RouterLink>
+      </nav>
+    </div>
+  </header>
 </template>
 <style>
 #layout {
