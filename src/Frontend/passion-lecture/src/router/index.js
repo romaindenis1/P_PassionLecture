@@ -16,6 +16,7 @@ const router = createRouter({
       path: '/categories/:id/livres',
       name: 'CategoryBooks',
       component: categoryFilter,
+      props: true,
     },
   ],
 })
