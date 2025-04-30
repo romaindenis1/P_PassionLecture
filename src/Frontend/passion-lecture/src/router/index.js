@@ -1,12 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ConnectionBackend from '@/components/connectionBackend.vue'
+
 import AccueilView from '@/views/AccueilView.vue'
-import categoryFilter from '@/components/categoryFilter.vue'
+import CategoryView from '@/views/CategoryView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: '/test', name: 'test', component: ConnectionBackend },
     {
       path: '/livres',
       name: 'accueil',
@@ -15,7 +14,7 @@ const router = createRouter({
     {
       path: '/categories/:id/livres',
       name: 'CategoryBooks',
-      component: categoryFilter,
+      component: CategoryView,
       props: true,
     },
   ],
