@@ -80,7 +80,7 @@ livreRouter.get("/:id", async (req, res) => {
     const book = await Livre.findByPk(id, {
       include: [
         { model: Auteur, as: "auteur", required: false },
-        { model: Categorie, required: false },
+        { model: Categorie, as: "categorie", required: false },
       ],
     });
 
