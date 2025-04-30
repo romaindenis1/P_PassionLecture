@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { api } from '../services/api'
 import LivreCard from '../components/LivreCard.vue'
+import Header from '../components/Header.vue'
 
 const livres = ref([])
 const loading = ref(true)
@@ -25,23 +26,7 @@ onMounted(async () => {
 
 <template>
   <div>
-    <header>
-      <div>
-        <h1>Passion Lecture</h1>
-      </div>
-      <div>
-        <input type="text" placeholder="Rechercher un livre..." />
-      </div>
-      <div>
-        <template v-if="!isAuthenticated">
-          <button><a href="/login">Se connecter</a></button>
-          <button><a href="/signup">Créer un compte</a></button>
-        </template>
-        <template v-else>
-          <button><a href="/account">Mon compte</a></button>
-        </template>
-      </div>
-    </header>
+    <Header></Header>
 
     <h1>Liste des Livres</h1>
 

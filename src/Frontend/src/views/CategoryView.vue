@@ -3,11 +3,10 @@ import { onMounted, ref } from 'vue'
 import { api } from '../services/api'
 import LivreCard from '../components/LivreCard.vue'
 import { useRoute } from 'vue-router'
-
+import Header from '../components/Header.vue'
 const livres = ref([])
 const loading = ref(true)
 const error = ref('')
-
 
 const route = useRoute()
 const id = route.params.id
@@ -28,15 +27,7 @@ onMounted(async () => {
 
 <template>
   <div>
-    <header>
-      <div>
-        <input type="text" placeholder="Rechercher un livre..." />
-      </div>
-      <div>
-        <button>Se connecter</button>
-        <button>Créer un compte</button>
-      </div>
-    </header>
+    <Header></Header>
     <h1>Liste des Livres</h1>
 
     <p v-if="loading">Chargement...</p>
