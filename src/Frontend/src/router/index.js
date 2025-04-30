@@ -4,6 +4,7 @@ import AccueilView from '@/views/AccueilView.vue'
 import CategoryView from '@/views/CategoryView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
+import BookView from '@/views/BookView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +31,11 @@ const router = createRouter({
       name: 'signup',
       component: RegisterView,
     },
+    {
+      path : '/livres/:id',
+      name : 'livre',
+      component : BookView,
+    }
   ],
 })
 

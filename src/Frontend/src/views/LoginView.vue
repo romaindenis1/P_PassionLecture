@@ -1,16 +1,23 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../services/api'
+import Footer from '../components/Footer.vue'
 
 const username = ref('')
 const password = ref('')
 const message = ref('')
 const router = useRouter()
 
-const register = async () => {
+onMounted(() => {
+  if (localStorage.getItem('token')) {
+    router.push('/livres')
+  }
+})
+
+const login = async () => {
   try {
-    const response = await api.post('/signup', {
+    const response = await api.post('/login', {
       username: username.value,
       password: password.value,
     })
@@ -21,7 +28,7 @@ const register = async () => {
 
     router.push('/livres')
   } catch (error) {
-    message.value = 'Erreur lors de l’inscription'
+    message.value = 'Échec de la connexion'
     console.error(error)
   }
 }
@@ -29,8 +36,8 @@ const register = async () => {
 
 <template>
   <div>
-    <h1>Créer un compte</h1>
-    <form @submit.prevent="register">
+    <h1>Se connecter</h1>
+    <form @submit.prevent="login">
       <div>
         <label>Nom d'utilisateur</label>
         <input v-model="username" type="text" />
@@ -40,9 +47,10 @@ const register = async () => {
         <input v-model="password" type="password" />
       </div>
 
-      <button type="submit">Créer un compte</button>
+      <button type="submit">Se connecter</button>
     </form>
     <p>{{ message }}</p>
-    <p>Déjà inscrit ? <a href="/login">Se connecter</a></p>
+    <p>Pas encore inscrit ? <a href="/signup">Créer un compte</a></p>
+    <Footer></Footer>
   </div>
 </template>

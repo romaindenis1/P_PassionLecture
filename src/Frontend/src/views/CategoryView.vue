@@ -2,18 +2,21 @@
 import { onMounted, ref } from 'vue'
 import { api } from '../services/api'
 import LivreCard from '../components/LivreCard.vue'
+import { useRoute } from 'vue-router'
+import Header from '../components/Header.vue'
+import Footer from '../components/Footer.vue'
 
 const livres = ref([])
 const loading = ref(true)
 const error = ref('')
-const isAuthenticated = ref(false)
+
+const route = useRoute()
+const id = route.params.id
 
 onMounted(async () => {
-  isAuthenticated.value = !!localStorage.getItem('token')
-
   try {
-    const response = await api.get('/livres')
-    livres.value = response.data.data
+    const response = await api.get(`/categories/${id}/livres`)
+    livres.value = response.data.books || [] //Books par ce que c'est le nom du tableau qui return les livres dans le backend
   } catch (err) {
     error.value = 'Erreur lors du chargement des livres'
     console.error(err)
@@ -25,24 +28,7 @@ onMounted(async () => {
 
 <template>
   <div>
-    <header>
-      <div>
-        <h1>Passion Lecture</h1>
-      </div>
-      <div>
-        <input type="text" placeholder="Rechercher un livre..." />
-      </div>
-      <div>
-        <template v-if="!isAuthenticated">
-          <button><a href="/login">Se connecter</a></button>
-          <button><a href="/signup">Créer un compte</a></button>
-        </template>
-        <template v-else>
-          <button><a href="/account">Mon compte</a></button>
-        </template>
-      </div>
-    </header>
-
+    <Header></Header>
     <h1>Liste des Livres</h1>
 
     <p v-if="loading">Chargement...</p>
@@ -53,5 +39,6 @@ onMounted(async () => {
     </div>
 
     <p v-if="!loading && livres.length === 0">Aucun livre trouvé.</p>
+    <Footer></Footer>
   </div>
 </template>
