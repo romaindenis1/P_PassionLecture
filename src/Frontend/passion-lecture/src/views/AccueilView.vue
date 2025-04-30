@@ -6,8 +6,11 @@ import LivreCard from '../components/LivreCard.vue'
 const livres = ref([])
 const loading = ref(true)
 const error = ref('')
+const isAuthenticated = ref(false)
 
 onMounted(async () => {
+  isAuthenticated.value = !!localStorage.getItem('token')
+
   try {
     const response = await api.get('/livres')
     livres.value = response.data.data
@@ -30,10 +33,16 @@ onMounted(async () => {
         <input type="text" placeholder="Rechercher un livre..." />
       </div>
       <div>
-        <button>Se connecter</button>
-        <button>Créer un compte</button>
+        <template v-if="!isAuthenticated">
+          <button><a href="/login">Se connecter</a></button>
+          <button><a href="/signup">Créer un compte</a></button>
+        </template>
+        <template v-else>
+          <button><a href="/account">Mon compte</a></button>
+        </template>
       </div>
     </header>
+
     <h1>Liste des Livres</h1>
 
     <p v-if="loading">Chargement...</p>
