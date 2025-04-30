@@ -12,12 +12,11 @@ const error = ref('')
 
 const route = useRoute()
 const id = route.params.id
-console.log('Route param ID:', id)
+
 onMounted(async () => {
   try {
     const response = await api.get(`/categories/${id}/livres`)
     livres.value = response.data.books || [] //Books par ce que c'est le nom du tableau qui return les livres dans le backend
-    console.log('Livres:', livres.value)
   } catch (err) {
     error.value = 'Erreur lors du chargement des livres'
     console.error(err)
