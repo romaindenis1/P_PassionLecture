@@ -4,6 +4,7 @@ import { api } from '../services/api'
 import LivreCard from '../components/LivreCard.vue'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
+import CategorieFiltre from '../components/CategorieFiltre.vue'
 
 const livres = ref([])
 const loading = ref(true)
@@ -23,11 +24,23 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+const filterBooksByCategory = async (categoryId) => {
+  try {
+    const response = await api.get(`/categories/${categoryId}/livres`)
+    livres.value = response.data
+  } catch (err) {
+    error.value = 'Erreur lors du filtrage des livres'
+    console.error(err)
+  }
+}
 </script>
 
 <template>
   <div>
     <Header></Header>
+
+    <CategorieFiltre @filterBooks="filterBooksByCategory" />
 
     <h1>Liste des Livres</h1>
 
