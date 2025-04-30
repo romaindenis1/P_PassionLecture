@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../services/api'
+import Footer from '../components/Footer.vue'
 
 const username = ref('')
 const password = ref('')
@@ -50,5 +51,6 @@ const login = async () => {
     </form>
     <p>{{ message }}</p>
     <p>Pas encore inscrit ? <a href="/signup">Créer un compte</a></p>
+    <Footer></Footer>
   </div>
 </template>

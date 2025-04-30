@@ -4,6 +4,8 @@ import { api } from '../services/api'
 import LivreCard from '../components/LivreCard.vue'
 import { useRoute } from 'vue-router'
 import Header from '../components/Header.vue'
+import Footer from '../components/Footer.vue'
+
 const livres = ref([])
 const loading = ref(true)
 const error = ref('')
@@ -38,5 +40,6 @@ onMounted(async () => {
     </div>
 
     <p v-if="!loading && livres.length === 0">Aucun livre trouvé.</p>
+    <Footer></Footer>
   </div>
 </template>

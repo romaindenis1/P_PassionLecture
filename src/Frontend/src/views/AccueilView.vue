@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { api } from '../services/api'
 import LivreCard from '../components/LivreCard.vue'
 import Header from '../components/Header.vue'
+import Footer from '../components/Footer.vue'
 
 const livres = ref([])
 const loading = ref(true)
@@ -38,5 +39,6 @@ onMounted(async () => {
     </div>
 
     <p v-if="!loading && livres.length === 0">Aucun livre trouvé.</p>
+    <Footer></Footer>
   </div>
 </template>

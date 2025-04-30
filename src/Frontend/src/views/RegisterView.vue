@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../services/api'
+import Footer from '../components/Footer.vue'
 
 const username = ref('')
 const password = ref('')
@@ -44,5 +45,6 @@ const register = async () => {
     </form>
     <p>{{ message }}</p>
     <p>Déjà inscrit ? <a href="/login">Se connecter</a></p>
+    <Footer></Footer>
   </div>
 </template>
