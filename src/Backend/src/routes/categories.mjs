@@ -1,15 +1,41 @@
 import express from "express"; // Importer Express pour créer le routeur
-import { CategorieModel, LivreModel } from "../models/structure.mjs"; // Importer les modèles de Catégorie et Livre
 import { sequelize } from "../db/sequelize.mjs"; // Importer l'instance Sequelize
 import { Sequelize, Op, DataTypes } from "sequelize"; // Importer Sequelize et ses outils
 
+import {
+  AuteurModel,
+  CategorieModel,
+  UtilisateurModel,
+  EditeurModel,
+  LivreModel,
+} from "../db/sequelize.mjs";
+import {
+  LaisserModel,
+  ApprecierModel,
+  defineRelations,
+} from "../models/structure.mjs";
+
 const categorieRouter = express.Router(); // Créer le routeur pour les catégories
 
-// Initialiser le modèle Catégorie
-const Categorie = CategorieModel(sequelize, DataTypes);
-// Initialiser le modèle Livre
-const Livre = LivreModel(sequelize, DataTypes);
+// Initialisation des modèles en appelant les fonctions modèles avec sequelize et DataTypes
+const Auteur = AuteurModel(sequelize, DataTypes); // Initialiser le modèle Auteur
+const Categorie = CategorieModel(sequelize, DataTypes); // Initialiser le modèle Catégorie
+const Utilisateur = UtilisateurModel(sequelize, DataTypes); // Initialiser le modèle Utilisateur
+const Editeur = EditeurModel(sequelize, DataTypes); // Initialiser le modèle Editeur
+const Livre = LivreModel(sequelize, DataTypes); // Initialiser le modèle Livre
+const Laisser = LaisserModel(sequelize, DataTypes); // Initialiser le modèle Laisser (commentaires)
+const Apprecier = ApprecierModel(sequelize, DataTypes); // Initialiser le modèle Apprecier (notations)
 
+// Définir les relations entre les modèles en passant un objet contenant tous les modèles initialisés
+defineRelations({
+  Auteur,
+  Categorie,
+  Utilisateur,
+  Editeur,
+  Livre,
+  Laisser,
+  Apprecier,
+});
 // GET / - Récupérer toutes les catégories
 categorieRouter.get("/", async (req, res) => {
   try {
@@ -39,7 +65,11 @@ categorieRouter.get("/:id/livres", async (req, res) => {
   try {
     const { id } = req.params; // Extraire l'ID de la catégorie
     // Chercher les livres ayant cette catégorie (clé étrangère)
-    const books = await Livre.findAll({ where: { categorie_fk: id } });
+    const books = await Livre.findAll({ where: { categorie_fk: id } ,
+      include: [
+      { model: Auteur, as: "auteur" },
+      { model: Categorie, as: "categorie" },
+    ],});
 
     // Si aucun livre n'est trouvé, renvoyer un 404
     if (!books || books.length === 0) {
