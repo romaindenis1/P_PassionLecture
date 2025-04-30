@@ -21,7 +21,6 @@ onMounted(async () => {
 
     const commentsResponse = await api.get(`/livres/${id}/comments`)
     comments.value = commentsResponse.data.comments
-    console.log(commentsResponse.data.data)
   } catch (err) {
     error.value = 'Erreur lors du chargement des livres'
     console.error(err)
