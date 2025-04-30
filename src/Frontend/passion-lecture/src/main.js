@@ -1,8 +1,14 @@
 import './assets/main.css'
+import { api } from './services/api'
 
 import { createApp } from 'vue'
-import App from './App.vue'
 import router from './router'
+import App from './App.vue'
+
+const token = localStorage.getItem('token')
+if (token) {
+  api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+}
 
 const app = createApp(App)
 
