@@ -5,18 +5,20 @@ defineProps({
 </script>
 
 <template>
-  <div class="livre-card">
-    <img
-      :src="`http://localhost:3000${livre.imageCouverturePath}`"
-      alt="Couverture"
-      class="livre-cover"
-    />
-    <div class="livre-details">
-      <h2>{{ livre.titre }}</h2>
-      <p>Auteur : {{ livre.auteur?.nom || 'Inconnu' }}</p>
-      <p>Catégorie : {{ livre.categorie?.libelle || 'Non classé' }}</p>
+  <router-link :to="`/livres/${livre.livre_id}`" class="livre-card">
+    <div class="livre-card">
+      <img
+        :src="`http://localhost:3000${livre.imageCouverturePath}`"
+        alt="Couverture"
+        class="livre-cover"
+      />
+      <div class="livre-details">
+        <h2>{{ livre.titre }}</h2>
+        <p>Auteur : {{ livre.auteur?.nom || 'Inconnu' }}</p>
+        <p>Catégorie : {{ livre.categorie?.libelle || 'Non classé' }}</p>
+      </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <style scoped>
