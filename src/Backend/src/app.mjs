@@ -3,6 +3,7 @@ import swaggerJSDoc from "swagger-jsdoc"; // Générer la documentation Swagger
 import swaggerUi from "swagger-ui-express"; // Interface web pour Swagger
 import { swaggerSpec } from "./swagger.mjs"; // Configuration Swagger définie dans un fichier externe
 import { sequelize, initDb } from "./db/sequelize.mjs"; // Instance Sequelize et fonction d'initialisation de la DB
+import cookieParser from "cookie-parser";
 
 import cors from "cors";
 
@@ -36,8 +37,11 @@ const app = express();
 app.use(
   cors({
     origin: "http://localhost:5173", // autorise les requêtes depuis le frontend Vue.js
+    credentials: true,
   })
 );
+
+app.use(cookieParser());
 
 const port = 3000;
 app.use(express.json()); // Middleware pour parser le JSON
@@ -76,6 +80,11 @@ app.listen(port, async () => {
   }
 
   await initDb();
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("token"); // Supprime le cookie nommé 'token'
+  res.status(200).json({ message: "Déconnecté avec succès" });
 });
 
 // Middleware 404 pour les routes non trouvées
