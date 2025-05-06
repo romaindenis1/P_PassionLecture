@@ -18,7 +18,7 @@ const id = route.params.id
 onMounted(async () => {
   try {
     const bookResponse = await api.get(`/livres/${id}`)
-    livre.value = bookResponse.data.data 
+    livre.value = bookResponse.data.data
 
     const commentsResponse = await api.get(`/livres/${id}/comments`)
     comments.value = commentsResponse.data.comments
@@ -36,32 +36,21 @@ const submitComment = async () => {
     return
   }
 
-  const token = getCookie('token')
-  console.log('Retrieved token:', token) // Debug token retrieval
-  if (!token) {
-    error.value = 'Vous devez être connecté pour commenter. Aucun jeton trouvé.'
-    router.push('/login')
-    return
-  }
-
   try {
     const response = await api.post(`/livres/${id}/comments`, {
-      content: commentInput.value
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      content: commentInput.value,
     })
+
     comments.value.push(response.data.comment)
     commentInput.value = ''
     error.value = ''
   } catch (err) {
     console.error('Submit comment error:', err.response || err)
     if (err.response?.status === 401) {
-      error.value = 'Session expirée ou jeton invalide. Veuillez vous reconnecter.'
+      error.value = 'Vous devez être connecté pour commenter.'
       router.push('/login')
     } else {
-      error.value = 'Erreur lors de l\'envoi du commentaire'
+      error.value = "Erreur lors de l'envoi du commentaire"
     }
   }
 }
@@ -107,10 +96,10 @@ const getCookie = (name) => {
     <p v-if="!loading && !livre">Aucun livre trouvé.</p>
 
     <div class="comment-form">
-      <input 
-        v-model="commentInput" 
-        type="text" 
-        placeholder="Ajouter un commentaire..." 
+      <input
+        v-model="commentInput"
+        type="text"
+        placeholder="Ajouter un commentaire..."
         @keyup.enter="submitComment"
       />
       <button @click="submitComment">Envoyer</button>
