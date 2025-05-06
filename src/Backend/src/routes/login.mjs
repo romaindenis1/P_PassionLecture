@@ -34,11 +34,16 @@ loginRouter.post("/", (req, res) => {
             expiresIn: "1y", // Le token expire dans 1 an
           });
 
+          res.cookie("token", token, {
+            sameSite: "None", // ou "None" + secure: true si HTTPS
+            secure: false, // mettre à true si HTTPS
+            maxAge: 365 * 24 * 60 * 60 * 1000, // 1 an
+          });
+
           // Renvoyer la réponse avec les données de l'utilisateur et le token
           return res.json({
             message: "L'utilisateur a été connecté avec succès",
             data: user,
-            token,
           });
         });
     })

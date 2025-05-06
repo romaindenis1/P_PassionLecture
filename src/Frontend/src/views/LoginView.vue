@@ -9,12 +9,6 @@ const password = ref('')
 const message = ref('')
 const router = useRouter()
 
-onMounted(() => {
-  if (localStorage.getItem('token')) {
-    router.push('/livres')
-  }
-})
-
 const login = async () => {
   try {
     const response = await api.post('/login', {
@@ -22,9 +16,9 @@ const login = async () => {
       password: password.value,
     })
 
-    const token = response.data.token
-    localStorage.setItem('token', token)
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    const userId = response.data.data.utilisateur_id
+    sessionStorage.setItem('auth', 'true')
+    sessionStorage.setItem('userId', userId)
 
     router.push('/livres')
   } catch (error) {

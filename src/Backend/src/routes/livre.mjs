@@ -271,12 +271,11 @@ livreRouter.delete("/:id", auth, async (req, res) => {
 /////////////////////////////////// ROUTES COMMENT //////////////////////////////////////
 
 livreRouter.post("/:id/comments", auth, async (req, res) => {
-  const { contenu, utilisateur_id } = req.body;
+  const { content } = req.body; // on attend "content" comme côté frontend
+  const utilisateur_id = req.userId; // injecté par le middleware auth
 
-  if (!contenu || !utilisateur_id) {
-    return res
-      .status(400)
-      .json({ message: "Le contenu et l'utilisateur_id sont nécessaires." });
+  if (!content || !utilisateur_id) {
+    return res.status(400).json({ message: "Le contenu est requis." });
   }
 
   try {
@@ -291,14 +290,23 @@ livreRouter.post("/:id/comments", auth, async (req, res) => {
     const newComment = await Laisser.create({
       livre_fk: livreId,
       utilisateur_fk: utilisateur_id,
-      contenu: contenu,
+      contenu: content,
+    });
+
+    // recharge avec l'inclusion du username
+    const commentWithUser = await Laisser.findByPk(newComment.id, {
+      include: {
+        model: Utilisateur,
+        attributes: ["username"],
+      },
     });
 
     return res.status(201).json({
       message: "Commentaire ajouté avec succès.",
-      comment: newComment,
+      comment: commentWithUser,
     });
   } catch (error) {
+    console.error("Erreur lors de l'ajout du commentaire :", error);
     return res.status(500).json({
       message: "Le commentaire n'a pas pu être ajouté.",
       error: error.message,
