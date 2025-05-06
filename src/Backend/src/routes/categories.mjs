@@ -40,7 +40,6 @@ defineRelations({
 categorieRouter.get("/", async (req, res) => {
   try {
     const categories = await Categorie.findAll(); // Récupère toutes les catégories
-    console.log(categories); // Debug: afficher les catégories dans la console
 
     // Si aucune catégorie n'est trouvée, renvoyer un 404
     if (!categories || categories.length === 0) {
@@ -65,11 +64,13 @@ categorieRouter.get("/:id/livres", async (req, res) => {
   try {
     const { id } = req.params; // Extraire l'ID de la catégorie
     // Chercher les livres ayant cette catégorie (clé étrangère)
-    const books = await Livre.findAll({ where: { categorie_fk: id } ,
+    const books = await Livre.findAll({
+      where: { categorie_fk: id },
       include: [
-      { model: Auteur, as: "auteur" },
-      { model: Categorie, as: "categorie" },
-    ],});
+        { model: Auteur, as: "auteur" },
+        { model: Categorie, as: "categorie" },
+      ],
+    });
 
     // Si aucun livre n'est trouvé, renvoyer un 404
     if (!books || books.length === 0) {
