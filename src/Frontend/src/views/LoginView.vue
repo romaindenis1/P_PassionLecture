@@ -9,23 +9,14 @@ const password = ref('')
 const message = ref('')
 const router = useRouter()
 
-onMounted(() => {
-  if (localStorage.getItem('token')) {
-    router.push('/livres')
-  }
-})
-
 const login = async () => {
   try {
-    const response = await api.post('/login', {
+    await api.post('/login', {
       username: username.value,
       password: password.value,
     })
 
-    const token = response.data.token
-    localStorage.setItem('token', token)
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-
+    sessionStorage.setItem('auth', 'true') // 🔥
     router.push('/livres')
   } catch (error) {
     message.value = 'Échec de la connexion'

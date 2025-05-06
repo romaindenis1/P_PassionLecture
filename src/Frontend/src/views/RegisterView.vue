@@ -15,11 +15,7 @@ const register = async () => {
       username: username.value,
       password: password.value,
     })
-
-    const token = response.data.token
-    localStorage.setItem('token', token)
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-
+    sessionStorage.setItem('auth', 'true')
     router.push('/livres')
   } catch (error) {
     message.value = 'Erreur lors de l’inscription'
