@@ -26,10 +26,9 @@ const logout = async () => {
 <template>
   <header>
     <div>
-      <h1>Passion Lecture</h1>
-    </div>
-    <div>
-      <input type="text" placeholder="Rechercher un livre..." />
+      <h1>
+        <router-link to="/">Passion Lecture</router-link>
+      </h1>
     </div>
     <div>
       <template v-if="!isAuthenticated">

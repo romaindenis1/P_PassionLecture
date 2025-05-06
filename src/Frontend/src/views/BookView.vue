@@ -4,7 +4,7 @@ import { api } from '../services/api'
 import BookCard from '../components/BookCard.vue'
 import { useRoute, useRouter } from 'vue-router'
 import Comment from '@/components/Comment.vue'
-
+import Header from '@/components/Header.vue'
 const livre = ref([])
 const comments = ref([])
 const loading = ref(true)
@@ -77,17 +77,8 @@ const getCookie = (name) => {
 
 <template>
   <div>
-    <header>
-      <div>
-        <input type="text" placeholder="Rechercher un livre..." />
-      </div>
-      <div>
-        <button>Se connecter</button>
-        <button>Créer un compte</button>
-      </div>
-    </header>
+    <Header></Header>
     <h1>Liste des Livres</h1>
-
     <p v-if="loading">Chargement...</p>
     <p v-if="error" class="error">{{ error }}</p>
     <div v-if="!loading && livre">
