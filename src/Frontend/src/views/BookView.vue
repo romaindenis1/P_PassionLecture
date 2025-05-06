@@ -54,25 +54,6 @@ const submitComment = async () => {
     }
   }
 }
-
-const getCookie = (name) => {
-  try {
-    const cookies = document.cookie.split(';')
-    console.log('All cookies:', cookies) // Debug all cookies
-    for (let cookie of cookies) {
-      const [cookieName, cookieValue] = cookie.trim().split('=')
-      if (cookieName === name) {
-        console.log(`Found cookie ${name}:`, cookieValue)
-        return cookieValue
-      }
-    }
-    console.warn(`Cookie ${name} not found`)
-    return null
-  } catch (err) {
-    console.error('Error parsing cookies:', err)
-    return null
-  }
-}
 </script>
 
 <template>
