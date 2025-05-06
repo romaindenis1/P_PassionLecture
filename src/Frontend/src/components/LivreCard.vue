@@ -26,6 +26,10 @@ defineProps({
   display: flex;
   align-items: flex-start;
   gap: 16px;
+  margin-top: 3%;
+  margin-bottom: 3%;
+  margin-left: 3%;
+  border-radius: 3%;
 }
 
 .livre-cover {
@@ -34,10 +38,17 @@ defineProps({
   object-fit: cover;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-bottom: 3%;
+  margin-bottom: 0%;
 }
 
 .livre-details {
   flex: 1;
+}
+
+/* Ajout d'une grille pour afficher 2 livres par ligne */
+.livre-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 </style>
