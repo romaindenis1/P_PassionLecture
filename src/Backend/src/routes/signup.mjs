@@ -29,7 +29,7 @@ signupRouter.post("/", async (req, res) => {
       dateSignup: new Date(),
       isAdmin: false,
     });
-    const token = jwt.sign({ userId: newUser.utilisateur_id }, privateKey, {
+    const token = jwt.sign({ userId: newUser.utilisateur_id, username : newUser.username }, privateKey, {
       expiresIn: "1y",
     });
 
