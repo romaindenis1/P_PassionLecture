@@ -35,7 +35,6 @@ loginRouter.post("/", (req, res) => {
           });
 
           res.cookie("token", token, {
-            httpOnly: none,
             sameSite: "None", // ou "None" + secure: true si HTTPS
             secure: false, // mettre à true si HTTPS
             maxAge: 365 * 24 * 60 * 60 * 1000, // 1 an
