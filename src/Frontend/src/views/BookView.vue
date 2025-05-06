@@ -2,16 +2,17 @@
 import { onMounted, ref } from 'vue'
 import { api } from '../services/api'
 import BookCard from '../components/BookCard.vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import Comment from '@/components/Comment.vue'
 
 const livre = ref([])
 const comments = ref([])
 const loading = ref(true)
 const error = ref('')
-
+const commentInput = ref('')
 
 const route = useRoute()
+const router = useRouter()
 const id = route.params.id
 
 onMounted(async () => {
@@ -23,11 +24,66 @@ onMounted(async () => {
     comments.value = commentsResponse.data.comments
   } catch (err) {
     error.value = 'Erreur lors du chargement des livres'
-    console.error(err)
+    console.error('Loading error:', err)
   } finally {
     loading.value = false
   }
 })
+
+const submitComment = async () => {
+  if (!commentInput.value.trim()) {
+    error.value = 'Le commentaire ne peut pas être vide'
+    return
+  }
+
+  const token = getCookie('token')
+  console.log('Retrieved token:', token) // Debug token retrieval
+  if (!token) {
+    error.value = 'Vous devez être connecté pour commenter. Aucun jeton trouvé.'
+    router.push('/login')
+    return
+  }
+
+  try {
+    const response = await api.post(`/livres/${id}/comments`, {
+      content: commentInput.value
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    comments.value.push(response.data.comment)
+    commentInput.value = ''
+    error.value = ''
+  } catch (err) {
+    console.error('Submit comment error:', err.response || err)
+    if (err.response?.status === 401) {
+      error.value = 'Session expirée ou jeton invalide. Veuillez vous reconnecter.'
+      router.push('/login')
+    } else {
+      error.value = 'Erreur lors de l\'envoi du commentaire'
+    }
+  }
+}
+
+const getCookie = (name) => {
+  try {
+    const cookies = document.cookie.split(';')
+    console.log('All cookies:', cookies) // Debug all cookies
+    for (let cookie of cookies) {
+      const [cookieName, cookieValue] = cookie.trim().split('=')
+      if (cookieName === name) {
+        console.log(`Found cookie ${name}:`, cookieValue)
+        return cookieValue
+      }
+    }
+    console.warn(`Cookie ${name} not found`)
+    return null
+  } catch (err) {
+    console.error('Error parsing cookies:', err)
+    return null
+  }
+}
 </script>
 
 <template>
@@ -44,14 +100,24 @@ onMounted(async () => {
     <h1>Liste des Livres</h1>
 
     <p v-if="loading">Chargement...</p>
-    <p v-if="error">{{ error }}</p>
+    <p v-if="error" class="error">{{ error }}</p>
     <div v-if="!loading && livre">
-        <BookCard :livre="livre" />
+      <BookCard :livre="livre" />
     </div>
     <p v-if="!loading && !livre">Aucun livre trouvé.</p>
 
-    <div v-for="comment in comments" :key="comment.id" >
-        <Comment :comment="comment" />
+    <div class="comment-form">
+      <input 
+        v-model="commentInput" 
+        type="text" 
+        placeholder="Ajouter un commentaire..." 
+        @keyup.enter="submitComment"
+      />
+      <button @click="submitComment">Envoyer</button>
     </div>
-</div>
+
+    <div v-for="comment in comments" :key="comment.id">
+      <Comment :comment="comment" />
+    </div>
+  </div>
 </template>
