@@ -2,6 +2,8 @@ import express from "express"; // Importer Express pour créer le routeur
 import bcrypt from "bcrypt"; // Importer bcrypt pour hacher le mot de passe
 import { User } from "../db/sequelize.mjs"; // Importer le modèle User
 import { ValidationError, Op } from "sequelize"; // Importer ValidationError et Op
+import jwt from "jsonwebtoken";
+import { privateKey } from "../auth/private_key.mjs";
 
 const signupRouter = express(); // Créer une instance d'Express pour l'inscription
 
@@ -27,7 +29,16 @@ signupRouter.post("/", async (req, res) => {
       dateSignup: new Date(),
       isAdmin: false,
     });
+    const token = jwt.sign({ userId: newUser.utilisateur_id }, privateKey, {
+      expiresIn: "1y",
+    });
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "Lax",
+      secure: false,
+      maxAge: 365 * 24 * 60 * 60 * 1000,
+    });
     // Message de succès et réponse avec statut 201 (créé)
     const message = `L'utilisateur ${newUser.username} a bien été créé !`;
     res.status(201).json({ message, data: newUser });
