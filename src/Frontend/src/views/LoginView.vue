@@ -11,12 +11,15 @@ const router = useRouter()
 
 const login = async () => {
   try {
-    await api.post('/login', {
+    const response = await api.post('/login', {
       username: username.value,
       password: password.value,
     })
 
-    sessionStorage.setItem('auth', 'true') // 🔥
+    const userId = response.data.data.utilisateur_id
+    sessionStorage.setItem('auth', 'true')
+    sessionStorage.setItem('userId', userId)
+
     router.push('/livres')
   } catch (error) {
     message.value = 'Échec de la connexion'

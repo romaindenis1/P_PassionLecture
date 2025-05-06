@@ -5,6 +5,7 @@ import CategoryView from '@/views/CategoryView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
 import BookView from '@/views/BookView.vue'
+import UserView from '@/views/UserView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,12 @@ const router = createRouter({
     {
       path: '/livres/:id',
       name: 'livre',
+      component: BookView,
+    },
+    {
+      path: '/users/:id/livres',
+      name: 'usersLivres',
+      props: true,
       component: BookView,
     },
   ],
