@@ -3,6 +3,7 @@ import bcrypt from "bcrypt"; // Importer bcrypt pour hacher les mots de passe
 import { User } from "../db/sequelize.mjs"; // Importer le modèle User depuis la base de données
 import { Livre } from "../db/sequelize.mjs"; // Importer le modèle Livre
 import { Apprecier } from "../db/sequelize.mjs"; // Importer le modèle Livre
+import { Auteur, Categorie } from "../db/sequelize.mjs"; // Importer le modèle Livre
 
 const userRouter = express.Router(); // Créer un routeur pour les routes utilisateurs
 
@@ -87,10 +88,17 @@ userRouter.delete("/", async (req, res) => {
 });
 
 // GET /:id/livres - Récupérer les livres liés à un utilisateur
+
 userRouter.get("/:id/livres", async (req, res) => {
   try {
     const { id } = req.params;
-    const livres = await Livre.findAll({ where: { utilisateur_fk: id } });
+    const livres = await Livre.findAll({
+      where: { utilisateur_fk: id },
+      include: [
+        { model: Auteur, as: "auteur" },
+        { model: Categorie, as: "categorie" },
+      ],
+    });
 
     return res.json({
       message:
