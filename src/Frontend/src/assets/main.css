@@ -70,21 +70,21 @@ button:hover {
 }
 
 #navBar {
-  background-color: rgb(36, 36, 36); /* Couleur de fond sombre */
-  color: white; /* Couleur du texte */
-  padding: 1rem; /* Espacement interne */
-  display: flex; /* Disposition flexible */
-  justify-content: space-between; /* Espacement entre les éléments */
-  align-items: center; /* Alignement vertical */
-  border-bottom: 2px solid rgb(184, 0, 0); /* Bordure inférieure */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre subtile */
+  background-color: rgb(36, 36, 36);
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgb(184, 0, 0);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .livres-grid {
-  display: grid; /* Change flex to grid for better control */
-  grid-template-columns: repeat(2, 1fr); /* Two items per row */
-  gap: 1.5rem; /* Space between items */
-  justify-items: center; /* Center items horizontally */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  justify-items: center;
 }
 
 p,
