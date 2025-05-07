@@ -86,6 +86,8 @@ const filterBooksByCategory = async (categoryId) => {
     <p v-if="error">{{ error }}</p>
     <p v-if="!loading && livres.length === 0 && !error">Aucun livre trouvé.</p>
 
+    <router-link to="/ROMAINDENIS"><button>Ajouter un livre</button></router-link>
+
     <Footer></Footer>
   </div>
 </template>
