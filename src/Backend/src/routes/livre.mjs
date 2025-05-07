@@ -47,7 +47,7 @@ livreRouter.get("/", async (req, res) => {
   try {
     // Rechercher tous les livres en incluant les associations Auteur et Catégorie
     const books = await Livre.findAll({
-      limit: 5,
+      limit: 6,
       include: [
         { model: Auteur, as: "auteur" },
         { model: Categorie, as: "categorie" },

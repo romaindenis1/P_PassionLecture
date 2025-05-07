@@ -34,7 +34,7 @@ onMounted(async () => {
   } catch (err) {
     console.error(err)
     error.value = err.response?.data?.message || 'Erreur de chargement'
-    livres.value = [] // Met à vide en cas d’erreur gérée
+    livres.value = [] 
   } finally {
     loading.value = false
   }

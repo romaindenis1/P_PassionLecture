@@ -17,7 +17,7 @@ const id = route.params.id
 onMounted(async () => {
   try {
     const response = await api.get(`/categories/${id}/livres`)
-    livres.value = response.data.books || [] //Books par ce que c'est le nom du tableau qui return les livres dans le backend
+    livres.value = response.data.books || [] 
   } catch (err) {
     error.value = 'Erreur lors du chargement des livres'
     console.error(err)
@@ -48,7 +48,7 @@ const filterBooksByCategory = async (categoryId) => {
       <p v-if="loading">Chargement...</p>
       <p v-if="error">{{ error }}</p>
 
-      <div v-if="!loading && livres.length">
+      <div v-if="!loading && livres.length" class="livres-grid">
         <LivreCard v-for="livre in livres" :key="livre.livre_id" :livre="livre" />
       </div>
 

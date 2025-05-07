@@ -20,7 +20,7 @@ const logout = async () => {
     sessionStorage.removeItem('auth')
     sessionStorage.removeItem('userId')
     isAuthenticated.value = false
-    window.location.href = '/login' // forcer le changement de page
+    window.location.href = '/login' 
   }
 }
 </script>
@@ -42,3 +42,41 @@ const logout = async () => {
     </template>
   </header>
 </template>
+
+<style scoped>
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #242424;
+  color: white;
+  border-bottom: 2px solid rgb(184, 0, 0);
+  height: 80px; 
+  box-sizing: border-box; 
+}
+
+header h1 {
+  margin: 0;
+}
+
+header template {
+  display: flex;
+  gap: 10px; 
+}
+
+button {
+  background-color: hsla(0, 100%, 36%, 0.2);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: rgb(184, 0, 0);
+}
+</style>

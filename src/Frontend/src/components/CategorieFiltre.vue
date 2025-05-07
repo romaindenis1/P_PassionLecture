@@ -1,11 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router' // Importer useRouter
-import { api } from '../services/api' // Importer l'instance API
+import { useRouter } from 'vue-router'
+import { api } from '../services/api' 
 
 const categories = ref([])
-const router = useRouter() // Créer une instance de router
-
+const router = useRouter() 
 onMounted(async () => {
   try {
     const response = await api.get('/categories')
@@ -16,8 +15,7 @@ onMounted(async () => {
 })
 
 const filterBooks = (categorieId) => {
-  // Rediriger vers la route de la catégorie
-  router.push(`/categories/${categorieId}/livres`) // Rediriger vers la page des livres de la catégorie
+  router.push(`/categories/${categorieId}/livres`) 
 }
 </script>
 
@@ -38,9 +36,11 @@ const filterBooks = (categorieId) => {
 
 <style scoped>
 .navBar {
+  top: 0%;
   display: flex;
   gap: 10px;
   margin-top: 20px;
+  justify-content: center; 
 }
 
 .navBar button {
@@ -49,8 +49,17 @@ const filterBooks = (categorieId) => {
   padding: 10px 15px;
   font-size: 14px;
   cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    transform 0.2s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 150px; 
+  height: 50px; 
+  text-align: center;
+}
+
+@media (hover: hover) {
+  button:hover {
+    background-color: hsla(0, 100%, 36%, 0.2);
+    border-radius: 8px;
+    transform: scale(1.05); 
+  }
 }
 </style>
