@@ -37,21 +37,19 @@ const filterBooksByCategory = async (categoryId) => {
 </script>
 
 <template>
-  <div>
-    <Header></Header>
+  <Header></Header>
 
-    <CategorieFiltre @filterBooks="filterBooksByCategory" />
+  <CategorieFiltre @filterBooks="filterBooksByCategory" />
 
-    <h1>Liste des Livres</h1>
+  <h1>Liste des Livres</h1>
 
-    <p v-if="loading">Chargement...</p>
-    <p v-if="error">{{ error }}</p>
+  <p v-if="loading">Chargement...</p>
+  <p v-if="error">{{ error }}</p>
 
-    <div v-if="!loading && livres.length">
-      <LivreCard v-for="livre in livres" :key="livre.livre_id" :livre="livre" />
-    </div>
-
-    <p v-if="!loading && livres.length === 0">Aucun livre trouvé.</p>
-    <Footer></Footer>
+  <div v-if="!loading && livres.length" class="livres-grid">
+    <LivreCard v-for="livre in livres" :key="livre.livre_id" :livre="livre" />
   </div>
+
+  <p v-if="!loading && livres.length === 0">Aucun livre trouvé.</p>
+  <Footer></Footer>
 </template>

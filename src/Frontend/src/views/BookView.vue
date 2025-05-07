@@ -57,28 +57,26 @@ const submitComment = async () => {
 </script>
 
 <template>
-  <div>
-    <Header></Header>
-    <h1>Liste des Livres</h1>
-    <p v-if="loading">Chargement...</p>
-    <p v-if="error" class="error">{{ error }}</p>
-    <div v-if="!loading && livre">
-      <BookCard :livre="livre" />
-    </div>
-    <p v-if="!loading && !livre">Aucun livre trouvé.</p>
+  <Header></Header>
+  <h1>Liste des Livres</h1>
+  <p v-if="loading">Chargement...</p>
+  <p v-if="error" class="error">{{ error }}</p>
+  <div v-if="!loading && livre">
+    <BookCard :livre="livre" />
+  </div>
+  <p v-if="!loading && !livre">Aucun livre trouvé.</p>
 
-    <div class="comment-form">
-      <input
-        v-model="commentInput"
-        type="text"
-        placeholder="Ajouter un commentaire..."
-        @keyup.enter="submitComment"
-      />
-      <button @click="submitComment">Envoyer</button>
-    </div>
+  <div class="comment-form">
+    <input
+      v-model="commentInput"
+      type="text"
+      placeholder="Ajouter un commentaire..."
+      @keyup.enter="submitComment"
+    />
+    <button @click="submitComment">Envoyer</button>
+  </div>
 
-    <div v-for="comment in comments" :key="comment.id">
-      <Comment :comment="comment" />
-    </div>
+  <div v-for="comment in comments" :key="comment.id">
+    <Comment :comment="comment" />
   </div>
 </template>

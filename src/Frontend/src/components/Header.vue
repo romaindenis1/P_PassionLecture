@@ -27,22 +27,18 @@ const logout = async () => {
 
 <template>
   <header>
-    <div>
-      <h1>
-        <router-link to="/">Passion Lecture</router-link>
-      </h1>
-    </div>
-    <div>
-      <template v-if="!isAuthenticated">
-        <router-link to="/login"><button>Se connecter</button></router-link>
-        <router-link to="/signup"><button>Créer un compte</button></router-link>
-      </template>
-      <template v-else>
-        <button @click="logout">Déconnexion</button>
-        <router-link v-if="userId" :to="`/users/${userId}/livres`">
-          <button>Mon compte</button>
-        </router-link>
-      </template>
-    </div>
+    <h1>
+      <router-link to="/">Passion Lecture</router-link>
+    </h1>
+    <template v-if="!isAuthenticated">
+      <router-link to="/login"><button>Se connecter</button></router-link>
+      <router-link to="/signup"><button>Créer un compte</button></router-link>
+    </template>
+    <template v-else>
+      <button @click="logout">Déconnexion</button>
+      <router-link v-if="userId" :to="`/users/${userId}/livres`">
+        <button>Mon compte</button>
+      </router-link>
+    </template>
   </header>
 </template>

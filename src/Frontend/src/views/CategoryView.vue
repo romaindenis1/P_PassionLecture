@@ -38,7 +38,7 @@ const filterBooksByCategory = async (categoryId) => {
 </script>
 
 <template>
-  <div>
+  <div id="page">
     <Header></Header>
     <CategorieFiltre @filterBooks="filterBooksByCategory" />
 

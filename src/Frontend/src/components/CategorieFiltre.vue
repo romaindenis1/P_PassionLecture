@@ -24,7 +24,7 @@ const filterBooks = (categorieId) => {
 <template>
   <div>
     <h2>Filtrer par catégorie</h2>
-    <div>
+    <div class="navBar">
       <button
         v-for="categorie in categories"
         :key="categorie.categorie_id"
@@ -35,3 +35,22 @@ const filterBooks = (categorieId) => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.navBar {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.navBar button {
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+</style>
