@@ -45,7 +45,6 @@ defineProps({
   flex: 1;
 }
 
-/* Ajout d'une grille pour afficher 2 livres par ligne */
 .livre-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
