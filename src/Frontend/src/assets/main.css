@@ -81,10 +81,10 @@ button:hover {
 }
 
 .livres-grid {
-  display: flex;
-  flex-direction: column;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+  display: grid; /* Change flex to grid for better control */
+  grid-template-columns: repeat(2, 1fr); /* Two items per row */
+  gap: 1.5rem; /* Space between items */
+  justify-items: center; /* Center items horizontally */
 }
 
 p,
