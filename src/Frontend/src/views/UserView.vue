@@ -78,22 +78,16 @@ const filterBooksByCategory = async (categoryId) => {
   <p v-if="loading">Chargement...</p>
   <p v-if="error">{{ error }}</p>
 
-<<<<<<< Updated upstream
-    <div v-if="!loading && livres.length">
-      <LivreCard v-for="livre in livres" :key="livre.livre_id" :livre="livre" />
-    </div>
-
-    <p v-if="error">{{ error }}</p>
-    <p v-if="!loading && livres.length === 0 && !error">Aucun livre trouvé.</p>
-
-    <router-link to="/ROMAINDENIS"><button>Ajouter un livre</button></router-link>
-
-    <Footer></Footer>
-=======
   <div v-if="!loading && livres.length">
     <LivreCard v-for="livre in livres" :key="livre.livre_id" :livre="livre" />
->>>>>>> Stashed changes
   </div>
+
+  <p v-if="error">{{ error }}</p>
+  <p v-if="!loading && livres.length === 0 && !error">Aucun livre trouvé.</p>
+
+  <router-link to="/ROMAINDENIS"><button>Ajouter un livre</button></router-link>
+
+  <Footer></Footer>
 
   <p v-if="!loading && livres.length === 0">Aucun livre trouvé.</p>
   <Footer></Footer>
