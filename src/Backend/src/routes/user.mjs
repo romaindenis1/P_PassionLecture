@@ -92,13 +92,13 @@ userRouter.get("/:id/livres", async (req, res) => {
     const { id } = req.params;
     const livres = await Livre.findAll({ where: { utilisateur_fk: id } });
 
-    if (!livres || livres.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Aucun livre trouvé pour cet utilisateur." });
-    }
-
-    res.json({ message: "Livres trouvés pour l'utilisateur.", data: livres });
+    return res.json({
+      message:
+        livres.length > 0
+          ? "Livres trouvés pour l'utilisateur."
+          : "Aucun livre trouvé pour cet utilisateur.",
+      data: livres,
+    });
   } catch (error) {
     console.error("Erreur lors de la récupération des livres :", error);
     res.status(500).json({ message: "Une erreur est survenue.", error });
