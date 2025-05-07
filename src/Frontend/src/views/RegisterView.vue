@@ -15,7 +15,11 @@ const register = async () => {
       username: username.value,
       password: password.value,
     })
+
+    const userId = response.data.data.utilisateur_id
     sessionStorage.setItem('auth', 'true')
+    sessionStorage.setItem('userId', userId)
+
     router.push('/livres')
   } catch (error) {
     message.value = 'Erreur lors de l’inscription'
