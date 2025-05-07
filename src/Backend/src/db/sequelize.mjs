@@ -191,3 +191,4 @@ export {
 };
 export { sequelize, Apprecier };
 export { Utilisateur as User };
+export { Auteur, Categorie };

@@ -6,7 +6,7 @@ import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import CategorieFiltre from '../components/CategorieFiltre.vue'
 import { useRoute } from 'vue-router'
-
+import { computed } from 'vue'
 import { watch } from 'vue'
 
 const livres = ref([])
@@ -14,6 +14,9 @@ const loading = ref(true)
 const error = ref('')
 const isAuthenticated = ref(false)
 const route = useRoute()
+
+const currentUserId = computed(() => sessionStorage.getItem('userId'))
+const isOwner = computed(() => currentUserId.value === route.params.id)
 
 onMounted(async () => {
   const userId = route.params.id || sessionStorage.getItem('userId')
@@ -93,7 +96,7 @@ const supprimerLivre = async (livreId) => {
     <div v-for="livre in livres" :key="livre.livre_id" class="livre-card-wrapper">
       <LivreCard :livre="livre" />
 
-      <div class="actions" v-if="sessionStorage.getItem('userId') === route.params.id">
+      <div class="actions" v-if="isOwner">
         <router-link :to="`/livres/${livre.livre_id}/edit`">
           <button>Modifier</button>
         </router-link>
