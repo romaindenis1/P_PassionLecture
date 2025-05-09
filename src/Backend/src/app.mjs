@@ -69,7 +69,7 @@ app.use("/auteurs", auteurRouter);
 app.use("/uploads", express.static("uploads"));
 
 // Lancement du serveur et connexion à la DB
-app.listen(port, async () => {
+app.listen(port, "0.0.0.0", async () => {
   console.log(`Example app listening on http://localhost:${port}`);
 
   try {
