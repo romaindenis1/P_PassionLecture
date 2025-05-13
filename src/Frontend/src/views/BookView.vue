@@ -74,7 +74,7 @@ const submitComment = async () => {
   <p v-if="!loading && !livre">Aucun livre trouvé.</p>
 
   <!-- Formulaire pour ajouter un commentaire -->
-  <div class="comment-form">
+  <div v-if="!loading" class="comment-form">
     <input
       v-model="commentInput"
       type="text"
@@ -82,6 +82,21 @@ const submitComment = async () => {
       @keyup.enter="submitComment"
     />
     <button @click="submitComment">Envoyer</button>
+  </div>
+
+  <!-- Commentaires -->
+  <div v-if="!loading">
+    <h2>Commentaires</h2>
+
+    <div v-if="comments.length === 0">
+      <p>Aucun commentaire pour ce livre.</p>
+    </div>
+
+    <div v-else>
+      <div v-for="comment in comments" :key="comment.id">
+        <Comment :comment="comment" />
+      </div>
+    </div>
   </div>
 
   <!-- Liste des commentaires -->

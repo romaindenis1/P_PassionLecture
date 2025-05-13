@@ -1,7 +1,5 @@
 // Importation du fichier CSS principal pour les styles globaux
 import './assets/main.css'
-// Importation du service API pour les requêtes HTTP (non utilisé dans ce fichier mais peut être utile globalement)
-import { api } from './services/api'
 
 // Importation des fonctions nécessaires de Vue
 import { createApp } from 'vue'
