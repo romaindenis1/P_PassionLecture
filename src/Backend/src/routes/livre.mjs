@@ -4,6 +4,8 @@ import { auth } from "../auth/auth.mjs"; // Importer le middleware d'authentific
 import { sequelize, User } from "../db/sequelize.mjs"; // Importer l'instance de Sequelize pour la connexion à la DB
 import { Sequelize, Op, DataTypes } from "sequelize"; // Importer Sequelize, les opérateurs et DataTypes
 import { upload } from "../middleware/uploadMiddleware.mjs";
+import { privateKey } from "../auth/private_key.mjs";
+import jwt from "jsonwebtoken";
 
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
@@ -116,9 +118,6 @@ livreRouter.get("/:id", async (req, res) => {
   }
 });
 
-import { privateKey } from "../auth/private_key.mjs";
-
-import jwt from "jsonwebtoken";
 
 livreRouter.post(
   "/",
@@ -126,7 +125,6 @@ livreRouter.post(
   async (req, res) => {
     // Récupérer le token depuis les cookies
     const token = req.cookies?.token;
-    console.log("Token reçu :", token); // ← VOIR CE QUI EST REÇU
 
     // Extraction des données du livre depuis le corps de la requête
     const { titre, auteur, categorie, anneeEdition, nbPage, resume } = req.body;
@@ -137,8 +135,7 @@ livreRouter.post(
     try {
       // Décodage du token JWT
       const decoded = jwt.verify(token, privateKey);
-      console.log("Payload JWT :", decoded); // ← VOIR LE CONTENU DU TOKEN
-      const utilisateur_fk = decoded.userId; // ← On extrait l'ID de l'utilisateur
+      const utilisateur_fk = decoded.userId;
 
       // Vérifier si l'auteur existe dans la DB, sinon le créer
       let auteurData = await Auteur.findOne({ where: { nom: auteur } });
