@@ -1,7 +1,7 @@
 import express from "express"; // Importer le module express pour créer le routeur
 import { success } from "./helper.mjs"; // Importer la fonction success pour formater les réponses
 import { auth } from "../auth/auth.mjs"; // Importer le middleware d'authentification (non utilisé ici)
-import { sequelize } from "../db/sequelize.mjs"; // Importer l'instance de Sequelize pour la connexion à la DB
+import { sequelize, User } from "../db/sequelize.mjs"; // Importer l'instance de Sequelize pour la connexion à la DB
 import { Sequelize, Op, DataTypes } from "sequelize"; // Importer Sequelize, les opérateurs et DataTypes
 import { upload } from "../middleware/uploadMiddleware.mjs";
 
@@ -86,6 +86,12 @@ livreRouter.get("/:id", async (req, res) => {
       include: [
         { model: Auteur, as: "auteur", required: false },
         { model: Categorie, as: "categorie", required: false },
+        {
+          model: User,
+          as: "utilisateur",
+          attributes: ["utilisateur_id", "username"],
+          required: false,
+        },
       ],
     });
 

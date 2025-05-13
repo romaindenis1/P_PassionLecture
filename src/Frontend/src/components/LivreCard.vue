@@ -21,9 +21,9 @@ defineProps({
             v-if="livre.utilisateur"
             :to="`/users/${livre.utilisateur.utilisateur_id}/livres`"
             >Ajouté par :
-            {{ livre.utilisateur.username }}
+            {{ livre.utilisateur?.username }}
           </router-link>
-          <span v-else>Utilisateur inconnu</span>
+          <span v-else>Ajouté par : Inconnu</span>
         </p>
       </div>
     </div>

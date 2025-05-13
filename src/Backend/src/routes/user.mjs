@@ -97,6 +97,11 @@ userRouter.get("/:id/livres", async (req, res) => {
       include: [
         { model: Auteur, as: "auteur" },
         { model: Categorie, as: "categorie" },
+        {
+          model: User,
+          as: "utilisateur",
+          attributes: ["utilisateur_id", "username"],
+        },
       ],
     });
 
