@@ -14,6 +14,7 @@ const loading = ref(true)
 const error = ref('')
 const isAuthenticated = ref(false)
 const route = useRoute()
+const user = ref(null)
 
 const currentUserId = computed(() => sessionStorage.getItem('userId'))
 const isOwner = computed(() => currentUserId.value === route.params.id)
@@ -29,12 +30,17 @@ onMounted(async () => {
   }
 
   try {
-    const response = await api.get(`/users/${userId}/livres`)
-    livres.value = response.data.data
+    const [userRes, livreRes] = await Promise.all([
+      api.get(`/users/${userId}`),
+      api.get(`/users/${userId}/livres`),
+    ])
+
+    user.value = userRes.data.data
+    livres.value = livreRes.data.data
   } catch (err) {
     console.error(err)
     error.value = err.response?.data?.message || 'Erreur de chargement'
-    livres.value = [] 
+    livres.value = []
   } finally {
     loading.value = false
   }
@@ -88,6 +94,10 @@ const supprimerLivre = async (livreId) => {
   <CategorieFiltre @filterBooks="filterBooksByCategory" />
 
   <h1>Liste des Livres</h1>
+  <div v-if="user" class="user-info">
+    <h2>Livres ajoutés par {{ user.username }}</h2>
+    <p>Total : {{ livres.length }} livre(s)</p>
+  </div>
 
   <p v-if="loading">Chargement...</p>
   <p v-if="error">{{ error }}</p>

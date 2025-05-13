@@ -31,6 +31,26 @@ userRouter.get("/", async (req, res) => {
   }
 });
 
+userRouter.get("/:id", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id, {
+      attributes: ["utilisateur_id", "username", "dateSignup", "isAdmin"],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé." });
+    }
+
+    return res.json({
+      message: "Utilisateur récupéré avec succès.",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération de l'utilisateur :", error);
+    res.status(500).json({ message: "Une erreur est survenue.", error });
+  }
+});
+
 // PUT / - Mettre à jour un utilisateur via ID (mise à jour du username et/ou mot de passe)
 userRouter.put("/", async (req, res) => {
   try {
