@@ -66,18 +66,19 @@
           const formData = new FormData();
           formData.append('imageCouverture', this.image);
           for (const key in this.livre) {
-            formData.append(key, this.livre[key]);  //Code nul pas tres fan
+            formData.append(key, this.livre[key]);
           }
           console.log(formData);
+          
           await axios.post('http://localhost:3000/livres/', formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
-            }
+            },
             withCredentials: true,
           });
   
           alert('Livre ajouté avec succès !');
-          this.$router.push('/'); // J'ai pas envie de rediriger vers la page de profil la TODO later maybe
+          this.$router.push('/');
         } catch (error) {
           console.error(error);
           alert('Erreur lors de l’ajout du livre.');
