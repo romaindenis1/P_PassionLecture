@@ -16,6 +16,15 @@ defineProps({
         <h2>{{ livre.titre }}</h2>
         <p>Auteur : {{ livre.auteur?.nom || 'Inconnu' }}</p>
         <p>Catégorie : {{ livre.categorie?.libelle || 'Non classé' }}</p>
+        <p>
+          <router-link
+            v-if="livre.utilisateur"
+            :to="`/users/${livre.utilisateur.utilisateur_id}/livres`"
+            >Ajouté par :
+            {{ livre.utilisateur.username }}
+          </router-link>
+          <span v-else>Utilisateur inconnu</span>
+        </p>
       </div>
     </div>
   </router-link>

@@ -284,6 +284,7 @@ const defineRelations = (models) => {
   Livre.belongsTo(Utilisateur, {
     foreignKey: "utilisateur_fk",
     targetKey: "utilisateur_id",
+    as: "utilisateur",
   });
   Utilisateur.hasMany(Livre, { foreignKey: "utilisateur_fk" });
 
