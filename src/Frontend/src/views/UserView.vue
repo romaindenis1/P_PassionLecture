@@ -34,7 +34,7 @@ onMounted(async () => {
   } catch (err) {
     console.error(err)
     error.value = err.response?.data?.message || 'Erreur de chargement'
-    livres.value = [] 
+    livres.value = []
   } finally {
     loading.value = false
   }
@@ -101,6 +101,12 @@ const supprimerLivre = async (livreId) => {
           <button>Modifier</button>
         </router-link>
         <button @click="supprimerLivre(livre.livre_id)">Supprimer</button>
+      </div>
+
+      <div class="modify-book-button">
+        <router-link :to="`/modify-book/${livre.livre_id}`">
+          <button>Modifier le Livre</button>
+        </router-link>
       </div>
     </div>
   </div>

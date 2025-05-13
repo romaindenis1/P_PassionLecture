@@ -6,6 +6,7 @@ import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
 import BookView from '@/views/BookView.vue'
 import UserView from '@/views/UserView.vue'
+import ModifyBookView from '@/views/ModifyView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,6 +46,12 @@ const router = createRouter({
       path: '/users/:id/livres',
       name: 'usersLivres',
       component: UserView,
+    },
+    {
+      path: '/modify-book/:livre_id',
+      name: 'modifyBook',
+      component: ModifyBookView,
+      props: true,
     },
   ],
 })
