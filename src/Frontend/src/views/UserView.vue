@@ -1,4 +1,5 @@
 <script setup>
+// Importation des modules nécessaires
 import { onMounted, ref } from 'vue'
 import { api } from '../services/api'
 import LivreCard from '../components/LivreCard.vue'
@@ -9,16 +10,19 @@ import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import { watch } from 'vue'
 
-const livres = ref([])
-const loading = ref(true)
-const error = ref('')
-const isAuthenticated = ref(false)
-const route = useRoute()
-const user = ref(null)
+// Déclaration des variables réactives
+const livres = ref([]) // Liste des livres
+const loading = ref(true) // Indicateur de chargement
+const error = ref('') // Message d'erreur
+const isAuthenticated = ref(false) // Indicateur d'authentification
+const route = useRoute() // Récupération des paramètres de la route
+const user = ref(null) // Informations de l'utilisateur
 
+// Calcul pour vérifier si l'utilisateur actuel est le propriétaire
 const currentUserId = computed(() => sessionStorage.getItem('userId'))
 const isOwner = computed(() => currentUserId.value === route.params.id)
 
+// Chargement des données lors du montage du composant
 onMounted(async () => {
   const userId = route.params.id || sessionStorage.getItem('userId')
   isAuthenticated.value = sessionStorage.getItem('auth') === 'true'
@@ -30,6 +34,7 @@ onMounted(async () => {
   }
 
   try {
+    // Récupération des données utilisateur et des livres associés
     const [userRes, livreRes] = await Promise.all([
       api.get(`/users/${userId}`),
       api.get(`/users/${userId}/livres`),
@@ -46,6 +51,7 @@ onMounted(async () => {
   }
 })
 
+// Surveillance des changements de l'ID utilisateur dans la route
 watch(
   () => route.params.id,
   async (newId) => {
@@ -65,6 +71,7 @@ watch(
   },
 )
 
+// Fonction pour filtrer les livres par catégorie
 const filterBooksByCategory = async (categoryId) => {
   try {
     const response = await api.get(`/categories/${categoryId}/livres`)
@@ -75,6 +82,7 @@ const filterBooksByCategory = async (categoryId) => {
   }
 }
 
+// Fonction pour supprimer un livre
 const supprimerLivre = async (livreId) => {
   if (!confirm('Voulez-vous vraiment supprimer ce livre ?')) return
 
@@ -91,21 +99,26 @@ const supprimerLivre = async (livreId) => {
 <template>
   <Header></Header>
 
+  <!-- Composant pour filtrer les livres par catégorie -->
   <CategorieFiltre @filterBooks="filterBooksByCategory" />
 
   <h1>Liste des Livres</h1>
   <div v-if="user" class="user-info">
+    <!-- Affichage des informations utilisateur -->
     <h2>Livres ajoutés par {{ user.username }}</h2>
     <p>Total : {{ livres.length }} livre(s)</p>
   </div>
 
+  <!-- Gestion des états de chargement et des erreurs -->
   <p v-if="loading">Chargement...</p>
   <p v-if="error">{{ error }}</p>
 
+  <!-- Affichage des livres -->
   <div v-if="!loading && livres.length">
     <div v-for="livre in livres" :key="livre.livre_id" class="livre-card-wrapper">
       <LivreCard :livre="livre" />
 
+      <!-- Actions disponibles si l'utilisateur est le propriétaire -->
       <div class="actions" v-if="isOwner">
         <router-link :to="`/livres/${livre.livre_id}/edit`">
           <button>Modifier</button>
@@ -115,8 +128,10 @@ const supprimerLivre = async (livreId) => {
     </div>
   </div>
 
+  <!-- Message si aucun livre n'est trouvé -->
   <p v-if="!loading && livres.length === 0 && !error">Aucun livre trouvé.</p>
 
+  <!-- Lien pour ajouter un nouveau livre -->
   <router-link to="/add"><button>Ajouter un livre</button></router-link>
 
   <Footer></Footer>
