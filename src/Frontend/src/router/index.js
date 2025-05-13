@@ -6,7 +6,7 @@ import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
 import BookView from '@/views/BookView.vue'
 import UserView from '@/views/UserView.vue'
-
+import AjouterLivre from '@/components/AddBook.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -19,6 +19,11 @@ const router = createRouter({
       name: 'accueil',
       component: AccueilView,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/add',
+      name: 'add',
+      component: AjouterLivre
     },
     {
       path: '/categories/:id/livres',
