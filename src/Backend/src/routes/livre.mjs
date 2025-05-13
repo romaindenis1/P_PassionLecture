@@ -116,18 +116,30 @@ livreRouter.get("/:id", async (req, res) => {
   }
 });
 
+import { privateKey } from "../auth/private_key.mjs";
+
+import jwt from "jsonwebtoken";
+
 livreRouter.post(
   "/",
-  auth,
   upload.single("imageCouverture"),
   async (req, res) => {
+    // Récupérer le token depuis les cookies
+    const token = req.cookies?.token;
+    console.log("Token reçu :", token); // ← VOIR CE QUI EST REÇU
+
     // Extraction des données du livre depuis le corps de la requête
     const { titre, auteur, categorie, anneeEdition, nbPage, resume } = req.body;
     const imageCouverturePath = req.file
-      ? `/uploads/${req.file.filename}`
-      : null; // Chemin de l'image, si fournie
+      ? `/uploads/${req.file.filename}` // Chemin de l'image, si fournie
+      : null;
 
     try {
+      // Décodage du token JWT
+      const decoded = jwt.verify(token, privateKey);
+      console.log("Payload JWT :", decoded); // ← VOIR LE CONTENU DU TOKEN
+      const utilisateur_fk = decoded.userId; // ← On extrait l'ID de l'utilisateur
+
       // Vérifier si l'auteur existe dans la DB, sinon le créer
       let auteurData = await Auteur.findOne({ where: { nom: auteur } });
       if (!auteurData) {
@@ -165,9 +177,10 @@ livreRouter.post(
         titre,
         auteur_fk: auteurData.auteur_id,
         categorie_fk: categorieData.categorie_id,
+        utilisateur_fk, // Ajout du FK depuis le token
         anneeEdition,
         nbPage,
-        imageCouverturePath, // Chemin de l'image de couverture
+        imageCouverturePath,
         resume,
       });
 
@@ -184,6 +197,7 @@ livreRouter.post(
     }
   }
 );
+
 
 // Route PUT pour modifier un livre par ID
 livreRouter.put("/:id", auth, async (req, res) => {
