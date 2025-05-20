@@ -186,4 +186,8 @@ button:hover {
   font-weight: bold;
   text-align: center;
 }
+
+.note {
+  display: none;
+}
 </style>
