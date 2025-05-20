@@ -232,7 +232,7 @@ livreRouter.put("/:id", auth, async (req, res) => {
     const updatedBook = await Livre.findByPk(bookId, {
       include: [
         { model: Auteur, as: "auteur", required: false },
-        { model: Categorie, required: false },
+        { model: Categorie, as: "categorie", required: false },
       ],
     });
 
