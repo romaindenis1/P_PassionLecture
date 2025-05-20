@@ -1,14 +1,17 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+// Importation des modules nécessaires
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../services/api'
 import Footer from '../components/Footer.vue'
 
+// Déclaration des variables réactives pour le formulaire
 const username = ref('')
 const password = ref('')
 const message = ref('')
 const router = useRouter()
 
+// Fonction pour gérer la connexion
 const login = async () => {
   try {
     const response = await api.post('/login', {
@@ -16,11 +19,21 @@ const login = async () => {
       password: password.value,
     })
 
-    const userId = response.data.data.utilisateur_id
-    sessionStorage.setItem('auth', 'true')
-    sessionStorage.setItem('userId', userId)
+    const user = response.data.data // données utilisateur
 
-    router.push('/livres')
+    // Stockage sessionStorage
+    sessionStorage.setItem('auth', 'true')
+    sessionStorage.setItem('userId', user.utilisateur_id)
+    sessionStorage.setItem('isAdmin', user.isAdmin ? '1' : '0')
+
+    sessionStorage.setItem('username', user.username)
+
+    // Redirection selon rôle
+    if (user.isAdmin) {
+      router.push('/admin')
+    } else {
+      router.push(`/users/${user.utilisateur_id}`)
+    }
   } catch (error) {
     message.value = 'Échec de la connexion'
     console.error(error)
@@ -31,6 +44,7 @@ const login = async () => {
 <template>
   <div>
     <h1>Se connecter</h1>
+    <!-- Formulaire de connexion -->
     <form @submit.prevent="login">
       <div>
         <label>Nom d'utilisateur</label>
@@ -43,8 +57,10 @@ const login = async () => {
 
       <button type="submit">Se connecter</button>
     </form>
-    <p>{{ message }}</p>
+
+    <p style="color: red">{{ message }}</p>
     <p>Pas encore inscrit ? <a href="/signup">Créer un compte</a></p>
+
     <Footer></Footer>
   </div>
 </template>

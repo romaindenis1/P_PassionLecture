@@ -1,9 +1,11 @@
 import express from "express"; // Importer le module express pour créer le routeur
 import { success } from "./helper.mjs"; // Importer la fonction success pour formater les réponses
 import { auth } from "../auth/auth.mjs"; // Importer le middleware d'authentification (non utilisé ici)
-import { sequelize } from "../db/sequelize.mjs"; // Importer l'instance de Sequelize pour la connexion à la DB
+import { sequelize, User } from "../db/sequelize.mjs"; // Importer l'instance de Sequelize pour la connexion à la DB
 import { Sequelize, Op, DataTypes } from "sequelize"; // Importer Sequelize, les opérateurs et DataTypes
 import { upload } from "../middleware/uploadMiddleware.mjs";
+import { privateKey } from "../auth/private_key.mjs";
+import jwt from "jsonwebtoken";
 
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
@@ -47,10 +49,15 @@ livreRouter.get("/", async (req, res) => {
   try {
     // Rechercher tous les livres en incluant les associations Auteur et Catégorie
     const books = await Livre.findAll({
-      limit: 6,
+      limit: 5,
       include: [
         { model: Auteur, as: "auteur" },
         { model: Categorie, as: "categorie" },
+        {
+          model: Utilisateur,
+          as: "utilisateur",
+          attributes: ["utilisateur_id", "username"],
+        },
       ],
     });
 
@@ -81,6 +88,12 @@ livreRouter.get("/:id", async (req, res) => {
       include: [
         { model: Auteur, as: "auteur", required: false },
         { model: Categorie, as: "categorie", required: false },
+        {
+          model: User,
+          as: "utilisateur",
+          attributes: ["utilisateur_id", "username"],
+          required: false,
+        },
       ],
     });
 
@@ -105,74 +118,75 @@ livreRouter.get("/:id", async (req, res) => {
   }
 });
 
-livreRouter.post(
-  "/",
-  auth,
-  upload.single("imageCouverture"),
-  async (req, res) => {
-    // Extraction des données du livre depuis le corps de la requête
-    const { titre, auteur, categorie, anneeEdition, nbPage, resume } = req.body;
-    const imageCouverturePath = req.file
-      ? `/uploads/${req.file.filename}`
-      : null; // Chemin de l'image, si fournie
+livreRouter.post("/", upload.single("imageCouverture"), async (req, res) => {
+  // Récupérer le token depuis les cookies
+  const token = req.cookies?.token;
 
-    try {
-      // Vérifier si l'auteur existe dans la DB, sinon le créer
-      let auteurData = await Auteur.findOne({ where: { nom: auteur } });
-      if (!auteurData) {
-        auteurData = await Auteur.create({ nom: auteur });
-      }
+  // Extraction des données du livre depuis le corps de la requête
+  const { titre, auteur, categorie, anneeEdition, nbPage, resume } = req.body;
+  const imageCouverturePath = req.file
+    ? `/uploads/${req.file.filename}` // Chemin de l'image, si fournie
+    : null;
 
-      // Vérifier si la catégorie existe dans la DB, sinon la créer
-      let categorieData = await Categorie.findOne({
-        where: { libelle: categorie },
-      });
-      if (!categorieData) {
-        categorieData = await Categorie.create({ libelle: categorie });
-      }
+  try {
+    // Décodage du token JWT
+    const decoded = jwt.verify(token, privateKey);
+    const utilisateur_fk = decoded.userId;
 
-      // Vérifier si un livre similaire existe déjà
-      const existingBooks = await Livre.findAll({
-        where: {
-          titre: { [Op.like]: `%${titre}%` },
-          auteur_fk: auteurData.auteur_id,
-          categorie_fk: categorieData.categorie_id,
-        },
-      });
+    // Vérifier si l'auteur existe dans la DB, sinon le créer
+    let auteurData = await Auteur.findOne({ where: { nom: auteur } });
+    if (!auteurData) {
+      auteurData = await Auteur.create({ nom: auteur });
+    }
 
-      if (existingBooks.length > 0) {
-        return res.json(
-          success(
-            "Voici les livres correspondant à votre recherche :",
-            existingBooks
-          )
-        );
-      }
+    // Vérifier si la catégorie existe dans la DB, sinon la créer
+    let categorieData = await Categorie.findOne({
+      where: { libelle: categorie },
+    });
+    if (!categorieData) {
+      categorieData = await Categorie.create({ libelle: categorie });
+    }
 
-      // Créer le nouveau livre dans la DB
-      const book = await Livre.create({
-        titre,
+    // Vérifier si un livre similaire existe déjà
+    const existingBooks = await Livre.findAll({
+      where: {
+        titre: { [Op.like]: `%${titre}%` },
         auteur_fk: auteurData.auteur_id,
         categorie_fk: categorieData.categorie_id,
-        anneeEdition,
-        nbPage,
-        imageCouverturePath, // Chemin de l'image de couverture
-        resume,
-      });
+      },
+    });
 
-      // Retourner le livre créé avec un message de succès
+    if (existingBooks.length > 0) {
       return res.json(
-        success(`Le livre "${book.titre}" a bien été créé.`, book)
+        success(
+          "Voici les livres correspondant à votre recherche :",
+          existingBooks
+        )
       );
-    } catch (error) {
-      console.error("Erreur lors de la création du livre :", error);
-      return res.status(500).json({
-        message: "Le livre n'a pas pu être ajouté.",
-        data: error.message,
-      });
     }
+
+    // Créer le nouveau livre dans la DB
+    const book = await Livre.create({
+      titre,
+      auteur_fk: auteurData.auteur_id,
+      categorie_fk: categorieData.categorie_id,
+      utilisateur_fk, // Ajout du FK depuis le token
+      anneeEdition,
+      nbPage,
+      imageCouverturePath,
+      resume,
+    });
+
+    // Retourner le livre créé avec un message de succès
+    return res.json(success(`Le livre "${book.titre}" a bien été créé.`, book));
+  } catch (error) {
+    console.error("Erreur lors de la création du livre :", error);
+    return res.status(500).json({
+      message: "Le livre n'a pas pu être ajouté.",
+      data: error.message,
+    });
   }
-);
+});
 
 // Route PUT pour modifier un livre par ID
 livreRouter.put("/:id", auth, async (req, res) => {
@@ -393,6 +407,7 @@ livreRouter.get("/:id/notes", async (req, res) => {
     });
   }
 });
+
 livreRouter.post("/:id/notes", auth, async (req, res) => {
   const { note, utilisateur_id, livre_id } = req.body;
 
@@ -409,16 +424,28 @@ livreRouter.post("/:id/notes", auth, async (req, res) => {
   try {
     const book = await Livre.findByPk(livre_id);
     if (!book) {
-      return res
-        .status(404)
-        .json({ message: "Le livre demandé n'existe pas." });
+      return res.status(404).json({ message: "Le livre n'existe pas." });
     }
 
     const user = await Utilisateur.findByPk(utilisateur_id);
     if (!user) {
-      return res
-        .status(400)
-        .json({ message: "L'utilisateur spécifié n'existe pas." });
+      return res.status(400).json({ message: "Utilisateur non trouvé." });
+    }
+
+    const existing = await Apprecier.findOne({
+      where: {
+        livre_fk: livre_id,
+        utilisateur_fk: utilisateur_id,
+      },
+    });
+
+    if (existing) {
+      existing.note = note;
+      await existing.save();
+      return res.status(200).json({
+        message: "Note mise à jour avec succès.",
+        rating: existing,
+      });
     }
 
     const newRating = await Apprecier.create({
@@ -433,7 +460,32 @@ livreRouter.post("/:id/notes", auth, async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      message: "La note n'a pas pu être ajoutée.",
+      message: "Erreur lors de l'enregistrement de la note.",
+      error: error.message,
+    });
+  }
+});
+
+livreRouter.get("/:id/notes/:utilisateur_id", async (req, res) => {
+  const livreId = parseInt(req.params.id, 10);
+  const utilisateurId = parseInt(req.params.utilisateur_id, 10);
+
+  try {
+    const rating = await Apprecier.findOne({
+      where: {
+        livre_fk: livreId,
+        utilisateur_fk: utilisateurId,
+      },
+    });
+
+    if (!rating) {
+      return res.status(404).json({ note: null });
+    }
+
+    return res.json({ note: rating.note });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erreur lors de la récupération de la note utilisateur.",
       error: error.message,
     });
   }

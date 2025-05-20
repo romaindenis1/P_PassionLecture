@@ -14,6 +14,8 @@ import { signupRouter } from "./routes/signup.mjs";
 import { userRouter } from "./routes/user.mjs";
 import { categorieRouter } from "./routes/categories.mjs";
 import { auteurRouter } from "./routes/auteur.mjs";
+import { adminRouter } from "./routes/adminRouter.mjs";
+import session from "express-session";
 
 // Options Swagger pour la documentation de l'API
 const swaggerOptions = {
@@ -43,6 +45,19 @@ app.use(
 
 app.use(cookieParser());
 
+app.use(
+  session({
+    secret: "test",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false, // ⚠️ true si HTTPS (ex: en prod)
+      maxAge: 24 * 60 * 60 * 1000, // 1 jour
+    },
+  })
+);
+
 const port = 3000;
 app.use(express.json()); // Middleware pour parser le JSON
 
@@ -65,7 +80,7 @@ app.use("/signup", signupRouter);
 app.use("/users", userRouter);
 app.use("/categories", categorieRouter);
 app.use("/auteurs", auteurRouter);
-
+app.use("/admin", adminRouter);
 app.use("/uploads", express.static("uploads"));
 
 // Lancement du serveur et connexion à la DB
