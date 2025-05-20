@@ -1,20 +1,18 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { api } from '../services/api'
-import { useRoute } from 'vue-router'
-import Comment from '@/components/Comment.vue'
+import { api, getAuthorIdByName, createAuthor } from '../services/api'
 import Header from '@/components/Header.vue'
 import BookCard from '@/components/BookCard.vue'
+import router from '@/router'
+
+const props = defineProps(['livre_id'])
 
 const livre = ref(null)
-const comments = ref([])
 const loading = ref(true)
 const error = ref('')
 const successMessage = ref('')
 const categories = ref([])
-
-const route = useRoute()
-const id = route.params.livre_id
+const id = props.livre_id
 
 onMounted(async () => {
   try {
@@ -24,7 +22,7 @@ onMounted(async () => {
     ])
 
     livre.value = bookResponse.data.data
-    categories.value = categoriesResponse.data.categories // ← Adapter au format réel
+    categories.value = categoriesResponse.data.categories
   } catch (err) {
     error.value = 'Erreur lors du chargement des données.'
     console.error('Loading error:', err)
@@ -34,10 +32,42 @@ onMounted(async () => {
 })
 
 const modifierLivre = async () => {
+  error.value = ''
+  successMessage.value = ''
   try {
-    await api.put(`/livres/${id}`, livre.value)
-    successMessage.value = 'Livre modifié avec succès.'
-    setTimeout(() => (successMessage.value = ''), 3000)
+    // Vérifie que l'auteur existe bien dans l'objet livre
+    if (!livre.value.auteur || !livre.value.auteur.nom) {
+      error.value = "Le nom de l'auteur est requis."
+      return
+    }
+    let auteurId
+    try {
+      const response = await getAuthorIdByName(livre.value.auteur.nom)
+      auteurId = response.data.auteur_id
+    } catch (err) {
+      if (err.response && err.response.status === 404) {
+        const createResponse = await createAuthor(livre.value.auteur.nom)
+        auteurId = createResponse.data.data.auteur_id
+      } else {
+        throw err
+      }
+    }
+
+    const data = {
+      titre: livre.value.titre,
+      resume: livre.value.resume,
+      nbPage: livre.value.nbPage,
+      anneeEdition: livre.value.anneeEdition,
+      categorie_fk: livre.value.categorie.categorie_id,
+      auteur_fk: auteurId,
+    }
+    await api.put(`/livres/${id}`, data)
+    successMessage.value = 'Livre modifié avec succès. Retour en arrière...'
+    setTimeout(() => {
+      successMessage.value = ''
+      // Retour à la page précédente après 1,5 seconde
+      window.history.length > 1 ? router.back() : (location.href = '/')
+    }, 1500)
   } catch (err) {
     error.value = 'Erreur lors de la modification du livre.'
     console.error('Update error:', err)
@@ -69,32 +99,32 @@ const modifierLivre = async () => {
 
     <div class="modif">
       <label for="description">Description :</label>
-      <textarea id="description" v-model="livre.description" required rows="4"></textarea>
+      <textarea id="description" v-model="livre.resume" required rows="4"></textarea>
     </div>
 
     <div class="modif">
       <label for="auteur">Auteur :</label>
-      <input id="auteur" v-model="livre.auteur" type="text" required />
+      <input id="auteur" v-model="livre.auteur.nom" type="text" required />
     </div>
 
     <div class="modif">
       <label for="categorie">Catégorie :</label>
-      <select id="categorie" v-model="livre.categorie" required>
+      <select id="categorie" v-model="livre.categorie.categorie_id" required>
         <option disabled value="">Sélectionnez une catégorie</option>
-        <option v-for="cat in categories" :key="cat.id" :value="cat.nom">
-          {{ cat.nom }}
+        <option v-for="cat in categories" :key="cat.categorie_id" :value="cat.categorie_id">
+          {{ cat.libelle }}
         </option>
       </select>
     </div>
 
     <div class="modif">
       <label for="pages">Pages :</label>
-      <input id="pages" v-model.number="livre.pages" type="number" required min="1" />
+      <input id="pages" v-model.number="livre.nbPage" type="number" required min="1" />
     </div>
 
     <div class="modif">
       <label for="annee">Année d'édition :</label>
-      <input id="annee" v-model.number="livre.annee_edition" type="number" required min="0" />
+      <input id="annee" v-model.number="livre.anneeEdition" type="number" required min="0" />
     </div>
 
     <button type="submit">Enregistrer les modifications</button>
@@ -104,14 +134,15 @@ const modifierLivre = async () => {
 </template>
 
 <style scoped>
+img {
+  height: 350px;
+}
+
 .form-modif {
-  background-color: rgb(107, 0, 0);
   padding: 2rem;
   margin: 2rem auto;
-  max-width: 600px;
-  border-radius: 10px;
+  max-width: 800px;
   color: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 .form-modif h2 {
   margin-bottom: 1rem;
