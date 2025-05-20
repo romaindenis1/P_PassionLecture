@@ -124,6 +124,12 @@ const supprimerLivre = async (livreId) => {
         </router-link>
         <button @click="supprimerLivre(livre.livre_id)">Supprimer</button>
       </div>
+
+      <div class="modify-book-button">
+        <router-link :to="`/modify-book/${livre.livre_id}`">
+          <button>Modifier le Livre</button>
+        </router-link>
+      </div>
     </div>
   </div>
 

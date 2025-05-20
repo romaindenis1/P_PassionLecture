@@ -80,5 +80,43 @@ auteurRouter.get("/:id/livres", async (req, res) => {
   }
 });
 
+// GET /getAuthorIdByName?nom=NomAuteur
+auteurRouter.get("/getAuthorIdByName", async (req, res) => {
+  const { nom } = req.query;
+  if (!nom) {
+    return res.status(400).json({ message: "Le nom de l'auteur est requis." });
+  }
+  try {
+    const auteur = await Auteur.findOne({ where: { nom } });
+    if (!auteur) {
+      return res.status(404).json({ message: "Auteur non trouvé." });
+    }
+    return res.json({ auteur_id: auteur.auteur_id });
+  } catch (error) {
+    return res.status(500).json({ message: "Erreur serveur", error });
+  }
+});
+
+// POST /auteurs - Créer un nouvel auteur
+auteurRouter.post("/", async (req, res) => {
+  const { nom } = req.body;
+  if (!nom) {
+    return res.status(400).json({ message: "Le nom de l'auteur est requis." });
+  }
+  try {
+    // Vérifie si l'auteur existe déjà
+    const existing = await Auteur.findOne({ where: { nom } });
+    if (existing) {
+      return res.status(409).json({ message: "Auteur déjà existant." });
+    }
+    const auteur = await Auteur.create({ nom });
+    return res
+      .status(201)
+      .json({ message: "Auteur créé avec succès.", data: auteur });
+  } catch (error) {
+    return res.status(500).json({ message: "Erreur serveur", error });
+  }
+});
+
 // Export du routeur pour l'utiliser dans l'application
 export { auteurRouter };

@@ -8,8 +8,10 @@ import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
 import BookView from '@/views/BookView.vue'
 import UserView from '@/views/UserView.vue'
+import ModifyBookView from '@/views/ModifyView.vue'
 import AjouterLivre from '@/components/AddBook.vue'
 import AdminView from '@/views/AdminView.vue'
+
 
 // Création du routeur avec un historique basé sur le Web
 const router = createRouter({
@@ -61,6 +63,12 @@ const router = createRouter({
       name: 'AdminPage', // Nom de la route
       component: AdminView, // Chargement dynamique du composant pour la page admin
       meta: { requiresAuth: true, isAdmin: true }, // Métadonnées indiquant que l'authentification et les droits d'administrateur sont requis
+    },
+    {
+      path: '/modify-book/:livre_id',
+      name: 'modifyBook',
+      component: ModifyBookView,
+      props: true,
     },
   ],
 })
