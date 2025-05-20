@@ -8,9 +8,12 @@ const isAuthenticated = ref(false)
 const userId = ref(null)
 
 // Vérification de l'état d'authentification et récupération de l'ID utilisateur au montage du composant
+const isAdmin = ref(false)
+
 onMounted(() => {
   isAuthenticated.value = sessionStorage.getItem('auth') === 'true'
   userId.value = sessionStorage.getItem('userId')
+  isAdmin.value = sessionStorage.getItem('isAdmin') === '1'
 })
 
 // Fonction pour gérer la déconnexion de l'utilisateur
@@ -46,7 +49,10 @@ const logout = async () => {
       <!-- Bouton pour se déconnecter si authentifié -->
       <button @click="logout">Déconnexion</button>
       <!-- Lien vers la page de l'utilisateur si l'ID utilisateur est disponible -->
-      <router-link v-if="userId" :to="`/users/${userId}/livres`">
+      <router-link v-if="isAdmin" to="/admin">
+        <button>Mon compte</button>
+      </router-link>
+      <router-link v-else-if="userId" :to="`/users/${userId}/livres`">
         <button>Mon compte</button>
       </router-link>
     </template>

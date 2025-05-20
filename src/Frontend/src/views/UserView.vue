@@ -100,7 +100,6 @@ const supprimerLivre = async (livreId) => {
   <Header></Header>
 
   <!-- Composant pour filtrer les livres par catégorie -->
-  <CategorieFiltre @filterBooks="filterBooksByCategory" />
 
   <h1>Liste des Livres</h1>
   <div v-if="user" class="user-info">

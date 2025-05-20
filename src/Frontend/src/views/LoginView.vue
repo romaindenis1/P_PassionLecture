@@ -1,34 +1,40 @@
 <script setup>
 // Importation des modules nécessaires
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../services/api'
 import Footer from '../components/Footer.vue'
 
 // Déclaration des variables réactives pour le formulaire
-const username = ref('') // Nom d'utilisateur
-const password = ref('') // Mot de passe
-const message = ref('') // Message d'erreur ou de succès
-const router = useRouter() // Utilisation du routeur pour naviguer
+const username = ref('')
+const password = ref('')
+const message = ref('')
+const router = useRouter()
 
 // Fonction pour gérer la connexion
 const login = async () => {
   try {
-    // Envoi des données de connexion à l'API
     const response = await api.post('/login', {
       username: username.value,
       password: password.value,
     })
 
-    // Stockage des informations utilisateur dans la session
-    const userId = response.data.data.utilisateur_id
-    sessionStorage.setItem('auth', 'true')
-    sessionStorage.setItem('userId', userId)
+    const user = response.data.data // données utilisateur
 
-    // Redirection vers la page des livres
-    router.push('/livres')
+    // Stockage sessionStorage
+    sessionStorage.setItem('auth', 'true')
+    sessionStorage.setItem('userId', user.utilisateur_id)
+    sessionStorage.setItem('isAdmin', user.isAdmin ? '1' : '0')
+
+    sessionStorage.setItem('username', user.username)
+
+    // Redirection selon rôle
+    if (user.isAdmin) {
+      router.push('/admin')
+    } else {
+      router.push(`/users/${user.utilisateur_id}`)
+    }
   } catch (error) {
-    // Gestion des erreurs
     message.value = 'Échec de la connexion'
     console.error(error)
   }
@@ -51,9 +57,10 @@ const login = async () => {
 
       <button type="submit">Se connecter</button>
     </form>
-    <!-- Affichage des messages -->
-    <p>{{ message }}</p>
+
+    <p style="color: red">{{ message }}</p>
     <p>Pas encore inscrit ? <a href="/signup">Créer un compte</a></p>
+
     <Footer></Footer>
   </div>
 </template>
