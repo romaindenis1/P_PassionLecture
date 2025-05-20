@@ -141,3 +141,20 @@ const supprimerLivre = async (livreId) => {
 
   <Footer></Footer>
 </template>
+
+<style scoped>
+.livre-card-wrapper {
+  margin-bottom: 2rem;
+}
+.actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 10px;
+}
+.modify-book-button {
+  margin-top: 0.5rem;
+}
+.user-info {
+  margin-bottom: 1.5rem;
+}
+</style>

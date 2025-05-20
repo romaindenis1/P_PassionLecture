@@ -1,3 +1,5 @@
+/* Style générale */
+
 * {
   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
@@ -13,48 +15,13 @@ body {
   font-weight: normal;
 }
 
-a:not(button a),
-.green {
-  text-decoration: none;
-  color: rgb(184, 0, 0);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(0, 100%, 36%, 0.2);
-    border-radius: 8px;
-    padding: 0;
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-}
-
+/* Style des titres */
 h1,
 h2 {
   color: rgb(184, 0, 0);
 }
 
-#livre-card {
-  border-radius: 3%;
-}
-
-a {
-  color: white;
-  text-decoration: none;
-}
-
+/* Style bar de navigation */
 button {
   background-color: hsla(0, 100%, 36%, 0.2);
   color: white;
@@ -82,17 +49,49 @@ button:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+a {
+  color: white;
+  text-decoration: none;
+}
+
+a:not(button a),
+.green {
+  text-decoration: none;
+  color: #b80000;
+  transition: 0.4s;
+  padding: 3px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(0, 100%, 36%, 0.2);
+    border-radius: 8px;
+    padding: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+  }
+
+  #app {
+    grid-template-columns: 1fr 1fr;
+    padding: 0 2rem;
+  }
+}
+
+/* Style des livres */
+#livre-card {
+  border-radius: 3%;
+}
+
 .livres-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
   justify-items: start;
-}
-
-p,
-footer {
-  color: rgb(184, 0, 0);
-  justify-items: center;
 }
 
 .fixed-container {
@@ -109,4 +108,11 @@ footer {
   padding: 2rem;
   box-sizing: border-box;
   background-color: rgb(24, 24, 24);
+}
+
+/* Style du footer */
+p,
+footer {
+  color: rgb(184, 0, 0);
+  justify-items: center;
 }

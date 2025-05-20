@@ -29,3 +29,7 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+/* Aucune règle de style spécifique à cette vue */
+</style>

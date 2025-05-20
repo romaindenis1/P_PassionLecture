@@ -71,3 +71,7 @@ const filterBooksByCategory = async (categoryId) => {
   <!-- Inclusion du pied de page -->
   <Footer></Footer>
 </template>
+
+<style scoped>
+/* Ajout de styles spécifiques à cette page ici si nécessaire */
+</style>

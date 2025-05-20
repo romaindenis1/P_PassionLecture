@@ -47,28 +47,96 @@ const submitRating = async () => {
 </script>
 
 <template>
-  <div>
-    <img :src="`http://localhost:3000${livre.imageCouverturePath}`" alt="Couverture" />
-    <h2>{{ livre.titre }}</h2>
-    <p>Auteur : {{ livre.auteur?.nom || 'Inconnu' }}</p>
-    <p>Catégorie : {{ livre.categorie?.libelle || 'Non classé' }}</p>
-    <p>{{ livre.resume }}</p>
-    <p>Pages : {{ livre.nbPage }} | Année édition : {{ livre.anneeEdition }}</p>
+  <div class="book-card">
+    <div class="book-image">
+      <img :src="`http://localhost:3000${livre.imageCouverturePath}`" alt="Couverture" />
+    </div>
+    <div class="book-details">
+      <h2>{{ livre.titre }}</h2>
+      <p>Auteur : {{ livre.auteur?.nom || 'Inconnu' }}</p>
+      <p>Catégorie : {{ livre.categorie?.libelle || 'Non classé' }}</p>
+      <p>{{ livre.resume }}</p>
+      <p>Pages : {{ livre.nbPage }} | Année édition : {{ livre.anneeEdition }}</p>
 
-    <p v-if="livre.utilisateur">
-      Ajouté par :
-      <router-link :to="`/users/${livre.utilisateur.utilisateur_id}/livres`">
-        {{ livre.utilisateur.username }}
-      </router-link>
-    </p>
-    <p v-else>Ajouté par : Inconnu</p>
+      <p v-if="livre.utilisateur">
+        Ajouté par :
+        <router-link :to="`/users/${livre.utilisateur.utilisateur_id}/livres`">
+          {{ livre.utilisateur.username }}
+        </router-link>
+      </p>
+      <p v-else>Ajouté par : Inconnu</p>
 
-    <div style="margin-top: 20px">
-      <h3>Notez ce livre :</h3>
-      <StarRating v-model="userRating" />
-      <button @click="submitRating">Soumettre</button>
-      <p style="margin-top: 10px">Note moyenne : {{ averageRating.toFixed(1) }} / 5</p>
-      <p v-if="error" style="color: red">{{ error }}</p>
+      <div class="note">
+        <h3>Notez ce livre :</h3>
+        <StarRating v-model="userRating" />
+        <button @click="submitRating">Soumettre</button>
+        <p class="note-moyenne">Note moyenne : {{ averageRating.toFixed(1) }} / 5</p>
+        <p v-if="error" class="note-error">{{ error }}</p>
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.book-card {
+  display: flex;
+  background: hsla(0, 100%, 36%, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  align-items: flex-start;
+}
+
+.book-image {
+  flex: 0 0 180px;
+  max-width: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.book-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  object-fit: cover;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+.book-details {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.book-details h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: whitesmoke;
+}
+
+.book-details p {
+  margin: 0.3rem 0;
+  color: whitesmoke;
+}
+
+.note {
+  margin-top: 1.5rem;
+}
+
+.note-moyenne {
+  margin-top: 10px;
+  color: whitesmoke;
+}
+
+.note-error {
+  color: whitesmoke;
+  margin-top: 0.5rem;
+}
+
+h3 {
+  color: whitesmoke;
+  margin-bottom: 0.5rem;
+}
+</style>
