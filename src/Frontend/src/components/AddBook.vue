@@ -43,7 +43,7 @@
       <input type="number" v-model="livre.anneeEdition" />
     </div>
 
-    <!-- Bouton pour soumettre le formulaire -->
+    <!-- Bouton de soumission -->
     <button type="submit">Ajouter</button>
   </form>
 </template>
@@ -55,7 +55,7 @@ export default {
   name: 'AjouterLivreForm',
   data() {
     return {
-      // Données du livre à ajouter
+      // Données du livre saisies par l'utilisateur
       livre: {
         titre: '',
         auteur: '',
@@ -64,31 +64,32 @@ export default {
         resume: '',
         anneeEdition: '',
       },
-      // Fichier image sélectionné
+      // Fichier image de couverture sélectionné
       image: null,
     }
   },
   methods: {
-    // Gestion du fichier sélectionné
+    // Enregistre le fichier sélectionné dans la propriété "image"
     handleFichier(event) {
       this.image = event.target.files[0]
     },
-    // Soumission du formulaire
+    // Envoie le formulaire avec les données du livre et l'image à l'API
     async soumettreFormulaire() {
       try {
         const formData = new FormData()
         formData.append('imageCouverture', this.image)
+
+        // Ajoute chaque champ du livre au FormData
         for (const key in this.livre) {
           formData.append(key, this.livre[key])
         }
-        console.log(formData)
 
-        // Envoi des données à l'API
+        // Envoie les données à l'API backend
         await axios.post('http://localhost:3000/livres/', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-          withCredentials: true,
+          withCredentials: true, // pour inclure les cookies (si nécessaire pour l’authentification)
         })
 
         alert('Livre ajouté avec succès !')

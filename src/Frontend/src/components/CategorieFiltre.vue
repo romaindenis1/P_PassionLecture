@@ -3,12 +3,13 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../services/api'
 
-// Déclaration d'une liste réactive pour stocker les catégories
+// Liste réactive contenant les catégories chargées depuis l’API
 const categories = ref([])
-// Utilisation du routeur pour naviguer entre les pages
+
+// Instance du routeur pour gérer la navigation
 const router = useRouter()
 
-// Chargement des catégories depuis l'API au montage du composant
+// Récupération des catégories au chargement du composant
 onMounted(async () => {
   try {
     const response = await api.get('/categories')
@@ -18,7 +19,7 @@ onMounted(async () => {
   }
 })
 
-// Fonction pour filtrer les livres par catégorie
+// Redirige vers la page des livres de la catégorie sélectionnée
 const filterBooks = (categorieId) => {
   router.push(`/categories/${categorieId}/livres`)
 }
@@ -28,7 +29,8 @@ const filterBooks = (categorieId) => {
   <div>
     <!-- Titre de la section -->
     <h2>Filtrer par catégorie</h2>
-    <!-- Liste des catégories sous forme de boutons -->
+
+    <!-- Affichage des boutons pour chaque catégorie -->
     <div class="navBar">
       <button
         v-for="categorie in categories"
@@ -42,16 +44,15 @@ const filterBooks = (categorieId) => {
 </template>
 
 <style scoped>
-/* Style pour la barre de navigation des catégories */
+/* Conteneur des boutons de catégorie */
 .navBar {
-  top: 0%;
   display: flex;
   gap: 10px;
   margin-top: 20px;
   justify-content: center;
 }
 
-/* Style pour les boutons des catégories */
+/* Style des boutons */
 .navBar button {
   border: none;
   border-radius: 5px;
@@ -66,7 +67,7 @@ const filterBooks = (categorieId) => {
   text-align: center;
 }
 
-/* Style pour le survol des boutons */
+/* Effet au survol (pour les périphériques compatibles) */
 @media (hover: hover) {
   button:hover {
     background-color: hsla(0, 100%, 36%, 0.2);

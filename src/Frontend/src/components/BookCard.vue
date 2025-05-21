@@ -3,25 +3,33 @@ import { ref, onMounted } from 'vue'
 import StarRating from './StartRating.vue'
 import { api } from '../services/api'
 
+// Récupération des props fournies au composant
 const props = defineProps({
   livre: Object,
 })
 
-// ⚠️ Simulation utilisateur connecté (à adapter)
+// Identifiant de l'utilisateur simulé (à remplacer par un vrai utilisateur connecté)
 const utilisateur_id = 1
 
+// Valeur de la note donnée par l'utilisateur
 const userRating = ref(0)
+
+// Moyenne des notes attribuées au livre
 const averageRating = ref(0)
+
+// Message d'erreur en cas d'échec
 const error = ref('')
 
-// Charger la moyenne + la note de l'utilisateur
+// Chargement des notes à l'affichage du composant
 onMounted(async () => {
   try {
+    // Récupère toutes les notes pour calculer la moyenne
     const avg = await api.get(`/livres/${props.livre.livre_id}/notes`)
     const notes = avg.data.ratings || []
     const moyenne = notes.reduce((acc, r) => acc + r.note, 0) / (notes.length || 1)
     averageRating.value = moyenne
 
+    // Récupère la note attribuée par l'utilisateur (si elle existe)
     const userRes = await api.get(`/livres/${props.livre.livre_id}/notes/${utilisateur_id}`)
     if (userRes.data.note) {
       userRating.value = userRes.data.note
@@ -31,6 +39,7 @@ onMounted(async () => {
   }
 })
 
+// Envoi de la note de l'utilisateur vers l'API
 const submitRating = async () => {
   try {
     await api.post(`/livres/${props.livre.livre_id}/notes`, {
@@ -48,9 +57,12 @@ const submitRating = async () => {
 
 <template>
   <div class="book-card">
+    <!-- Image de couverture -->
     <div class="book-image">
       <img :src="`http://localhost:3000${livre.imageCouverturePath}`" alt="Couverture" />
     </div>
+
+    <!-- Informations sur le livre -->
     <div class="book-details">
       <h2>{{ livre.titre }}</h2>
       <p>Auteur : {{ livre.auteur?.nom || 'Inconnu' }}</p>
@@ -58,6 +70,7 @@ const submitRating = async () => {
       <p>{{ livre.resume }}</p>
       <p>Pages : {{ livre.nbPage }} | Année édition : {{ livre.anneeEdition }}</p>
 
+      <!-- Affichage de l'utilisateur ayant ajouté le livre -->
       <p v-if="livre.utilisateur">
         Ajouté par :
         <router-link :to="`/users/${livre.utilisateur.utilisateur_id}/livres`">
@@ -66,6 +79,7 @@ const submitRating = async () => {
       </p>
       <p v-else>Ajouté par : Inconnu</p>
 
+      <!-- Bloc de notation -->
       <div class="note">
         <h3>Notez ce livre :</h3>
         <StarRating v-model="userRating" />

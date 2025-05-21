@@ -5,6 +5,4 @@
   </footer>
 </template>
 
-<script setup>
-// Aucun script nécessaire pour ce composant simple
-</script>
+<script setup></script>
