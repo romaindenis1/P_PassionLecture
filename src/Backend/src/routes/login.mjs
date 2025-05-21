@@ -25,9 +25,13 @@ loginRouter.post("/", (req, res) => {
               .json({ message: "Le mot de passe est incorrect." });
           }
 
-          const token = jwt.sign({ userId: user.utilisateur_id }, privateKey, {
-            expiresIn: "1y",
-          });
+          const token = jwt.sign(
+            { userId: user.utilisateur_id, isAdmin: user.isAdmin },
+            privateKey,
+            {
+              expiresIn: "1y",
+            }
+          );
 
           // SET COOKIE
           res.cookie("token", token, {

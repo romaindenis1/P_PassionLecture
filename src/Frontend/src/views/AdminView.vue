@@ -52,6 +52,10 @@ const supprimerLivre = async (livreId) => {
   <Header></Header>/>
 
   <main class="admin-container">
+    <router-link to="/add">
+      <button>Ajouter un livre</button>
+    </router-link>
+
     <h1>Page d’administration</h1>
 
     <!-- Affichage d’un message de chargement -->

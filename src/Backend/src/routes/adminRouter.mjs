@@ -5,7 +5,7 @@ import { auth } from "../auth/auth.mjs";
 const adminRouter = express.Router();
 
 adminRouter.get("/data", auth, async (req, res) => {
-  if (!req.session.user?.isAdmin) {
+  if (!req.isAdmin) {
     return res
       .status(403)
       .json({ message: "Accès refusé : admin uniquement." });

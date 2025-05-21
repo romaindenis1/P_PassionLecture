@@ -1,21 +1,18 @@
-import express from "express"; // Importer Express pour créer le routeur
-import bcrypt from "bcrypt"; // Importer bcrypt pour hacher les mots de passe
-import { User } from "../db/sequelize.mjs"; // Importer le modèle User depuis la base de données
-import { Livre } from "../db/sequelize.mjs"; // Importer le modèle Livre
-import { Apprecier } from "../db/sequelize.mjs"; // Importer le modèle Livre
-import { Auteur, Categorie } from "../db/sequelize.mjs"; // Importer le modèle Livre
+import express from "express";
+import bcrypt from "bcrypt";
+import { User, Livre, Apprecier, Auteur, Categorie } from "../db/sequelize.mjs";
+import { auth } from "../auth/auth.mjs";
 
-const userRouter = express.Router(); // Créer un routeur pour les routes utilisateurs
+const userRouter = express.Router();
 
 // GET / - Récupérer tous les utilisateurs, avec filtres optionnels par ID ou username
 userRouter.get("/", async (req, res) => {
   try {
-    const { id, username } = req.query; // Extraire les filtres de la requête
+    const { id, username } = req.query;
     const whereClause = {};
     if (id) whereClause.utilisateur_id = id;
     if (username) whereClause.username = username;
 
-    // Récupérer les utilisateurs en ne sélectionnant que certains attributs
     const users = await User.findAll({
       where: whereClause,
       attributes: ["utilisateur_id", "username", "dateSignup", "isAdmin"],
@@ -31,6 +28,7 @@ userRouter.get("/", async (req, res) => {
   }
 });
 
+// GET /:id - Récupérer les informations d'un utilisateur
 userRouter.get("/:id", async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id, {
@@ -51,14 +49,18 @@ userRouter.get("/:id", async (req, res) => {
   }
 });
 
-// PUT / - Mettre à jour un utilisateur via ID (mise à jour du username et/ou mot de passe)
-userRouter.put("/", async (req, res) => {
+// PUT / - Mettre à jour un utilisateur (authentifié ou admin seulement)
+userRouter.put("/", auth, async (req, res) => {
   try {
     const { id, username, password } = req.body;
     if (!id) {
       return res.status(400).json({
         message: "L'ID de l'utilisateur est requis pour la mise à jour.",
       });
+    }
+
+    if (req.userId !== parseInt(id) && !req.isAdmin) {
+      return res.status(403).json({ message: "Non autorisé." });
     }
 
     const user = await User.findByPk(id);
@@ -77,8 +79,8 @@ userRouter.put("/", async (req, res) => {
   }
 });
 
-// DELETE / - Supprimer un utilisateur par ID ou username
-userRouter.delete("/", async (req, res) => {
+// DELETE / - Supprimer un utilisateur par ID ou username (admin ou propriétaire)
+userRouter.delete("/", auth, async (req, res) => {
   try {
     const { id, username } = req.query;
     if (!id && !username) {
@@ -93,11 +95,13 @@ userRouter.delete("/", async (req, res) => {
       return res.status(404).json({ message: "Utilisateur non trouvé." });
     }
 
-    // Supprimer d'abord les enregistrements dépendants dans t_apprecier
-    await Apprecier.destroy({ where: { utilisateur_fk: user.utilisateur_id } });
+    if (req.userId !== user.utilisateur_id && !req.isAdmin) {
+      return res.status(403).json({ message: "Non autorisé." });
+    }
 
-    // Maintenant, supprimer l'utilisateur
+    await Apprecier.destroy({ where: { utilisateur_fk: user.utilisateur_id } });
     await user.destroy();
+
     res.json({
       message: "Utilisateur et ses notations supprimés avec succès.",
     });
@@ -107,11 +111,17 @@ userRouter.delete("/", async (req, res) => {
   }
 });
 
-// GET /:id/livres - Récupérer les livres liés à un utilisateur
-
-userRouter.get("/:id/livres", async (req, res) => {
+// GET /:id/livres - Récupérer les livres d'un utilisateur (protégé contre accès externe)
+userRouter.get("/:id/livres", auth, async (req, res) => {
   try {
     const { id } = req.params;
+    const isOwner = req.userId === parseInt(id);
+    if (!isOwner && !req.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "Accès non autorisé à ces livres." });
+    }
+
     const livres = await Livre.findAll({
       where: { utilisateur_fk: id },
       include: [
@@ -138,4 +148,4 @@ userRouter.get("/:id/livres", async (req, res) => {
   }
 });
 
-export { userRouter }; // Exporter le routeur pour l'intégrer dans l'application
+export { userRouter };

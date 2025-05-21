@@ -26,13 +26,13 @@ const router = createRouter({
       path: '/livres',
       name: 'accueil',
       component: AccueilView,
-      meta: { requiresAuth: true },
     },
     {
       // Route pour la page d'ajout de livre
       path: '/add',
       name: 'add',
       component: AjouterLivre,
+      meta: { requiresAuth: true },
     },
     {
       // Route pour la page de catégorie
@@ -58,12 +58,14 @@ const router = createRouter({
       path: '/livres/:id',
       name: 'livre',
       component: BookView,
+      meta: { requiresAuth: true },
     },
     {
       // Route pour la page de détails d'un utilisateur
       path: '/users/:id/livres',
       name: 'usersLivres',
       component: UserView,
+      meta: { requiresAuth: true },
     },
     {
       // Route pour la page d'administration
@@ -78,8 +80,31 @@ const router = createRouter({
       name: 'modifyBook',
       component: ModifyBookView,
       props: true,
+      meta: { requiresAuth: true },
     },
   ],
+})
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = sessionStorage.getItem('auth') === 'true'
+  const currentUserId = sessionStorage.getItem('userId')
+  const isAdmin = sessionStorage.getItem('isAdmin') === '1'
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    return next('/login')
+  }
+
+  if (to.name === 'usersLivres') {
+    const routeUserId = to.params.id
+    if (routeUserId !== currentUserId && !isAdmin) {
+      return next('/livres')
+    }
+  }
+
+  if (to.meta.isAdmin && !isAdmin) {
+    return next('/livres')
+  }
+
+  next()
 })
 
 export default router

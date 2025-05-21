@@ -118,82 +118,87 @@ livreRouter.get("/:id", async (req, res) => {
   }
 });
 
-livreRouter.post("/", upload.single("imageCouverture"), async (req, res) => {
-  // Récupérer le token depuis les cookies
-  const token = req.cookies?.token;
+livreRouter.post(
+  "/",
+  auth,
+  upload.single("imageCouverture"),
+  async (req, res) => {
+    // Récupérer le token depuis les cookies
+    const token = req.cookies?.token;
 
-  // Extraction des données du livre depuis le corps de la requête
-  const { titre, auteur, categorie, anneeEdition, nbPage, resume } = req.body;
-  const imageCouverturePath = req.file
-    ? `/uploads/${req.file.filename}` // Chemin de l'image, si fournie
-    : null;
+    // Extraction des données du livre depuis le corps de la requête
+    const { titre, auteur, categorie, anneeEdition, nbPage, resume } = req.body;
+    const imageCouverturePath = req.file
+      ? `/uploads/${req.file.filename}` // Chemin de l'image, si fournie
+      : null;
 
-  try {
-    // Décodage du token JWT
-    const decoded = jwt.verify(token, privateKey);
-    const utilisateur_fk = decoded.userId;
+    try {
+      // Décodage du token JWT
+      const decoded = jwt.verify(token, privateKey);
+      const utilisateur_fk = decoded.userId;
 
-    // Vérifier si l'auteur existe dans la DB, sinon le créer
-    let auteurData = await Auteur.findOne({ where: { nom: auteur } });
-    if (!auteurData) {
-      auteurData = await Auteur.create({ nom: auteur });
-    }
+      // Vérifier si l'auteur existe dans la DB, sinon le créer
+      let auteurData = await Auteur.findOne({ where: { nom: auteur } });
+      if (!auteurData) {
+        auteurData = await Auteur.create({ nom: auteur });
+      }
 
-    // Vérifier si la catégorie existe dans la DB, sinon la créer
-    let categorieData = await Categorie.findOne({
-      where: { libelle: categorie },
-    });
-    if (!categorieData) {
-      categorieData = await Categorie.create({ libelle: categorie });
-    }
+      // Vérifier si la catégorie existe dans la DB, sinon la créer
+      let categorieData = await Categorie.findOne({
+        where: { libelle: categorie },
+      });
+      if (!categorieData) {
+        categorieData = await Categorie.create({ libelle: categorie });
+      }
 
-    // Vérifier si un livre similaire existe déjà
-    const existingBooks = await Livre.findAll({
-      where: {
-        titre: { [Op.like]: `%${titre}%` },
+      // Vérifier si un livre similaire existe déjà
+      const existingBooks = await Livre.findAll({
+        where: {
+          titre: { [Op.like]: `%${titre}%` },
+          auteur_fk: auteurData.auteur_id,
+          categorie_fk: categorieData.categorie_id,
+        },
+      });
+
+      if (existingBooks.length > 0) {
+        return res.json(
+          success(
+            "Voici les livres correspondant à votre recherche :",
+            existingBooks
+          )
+        );
+      }
+
+      // Créer le nouveau livre dans la DB
+      const book = await Livre.create({
+        titre,
         auteur_fk: auteurData.auteur_id,
         categorie_fk: categorieData.categorie_id,
-      },
-    });
+        utilisateur_fk, // Ajout du FK depuis le token
+        anneeEdition,
+        nbPage,
+        imageCouverturePath,
+        resume,
+      });
 
-    if (existingBooks.length > 0) {
+      // Retourner le livre créé avec un message de succès
       return res.json(
-        success(
-          "Voici les livres correspondant à votre recherche :",
-          existingBooks
-        )
+        success(`Le livre "${book.titre}" a bien été créé.`, book)
       );
+    } catch (error) {
+      console.error("Erreur lors de la création du livre :", error);
+      return res.status(500).json({
+        message: "Le livre n'a pas pu être ajouté.",
+        data: error.message,
+      });
     }
-
-    // Créer le nouveau livre dans la DB
-    const book = await Livre.create({
-      titre,
-      auteur_fk: auteurData.auteur_id,
-      categorie_fk: categorieData.categorie_id,
-      utilisateur_fk, // Ajout du FK depuis le token
-      anneeEdition,
-      nbPage,
-      imageCouverturePath,
-      resume,
-    });
-
-    // Retourner le livre créé avec un message de succès
-    return res.json(success(`Le livre "${book.titre}" a bien été créé.`, book));
-  } catch (error) {
-    console.error("Erreur lors de la création du livre :", error);
-    return res.status(500).json({
-      message: "Le livre n'a pas pu être ajouté.",
-      data: error.message,
-    });
   }
-});
+);
 
 // Route PUT pour modifier un livre par ID
 livreRouter.put("/:id", auth, async (req, res) => {
-  const bookId = req.params.id; // Récupérer l'ID du livre à modifier depuis l'URL
-
+  const bookId = req.params.id;
   try {
-    // Vérifier si le livre existe
     const book = await Livre.findByPk(bookId);
     if (!book) {
       return res
@@ -201,16 +206,25 @@ livreRouter.put("/:id", auth, async (req, res) => {
         .json({ message: "Le livre demandé n'existe pas." });
     }
 
+    const utilisateur = await Utilisateur.findByPk(req.userId);
+    if (
+      !utilisateur ||
+      (book.utilisateur_fk !== req.userId && !utilisateur.isAdmin)
+    ) {
+      return res
+        .status(403)
+        .json({ message: "Vous n'avez pas le droit de modifier ce livre." });
+    }
+
     if (req.body.auteur) {
       let auteurData = await Auteur.findOne({
         where: { nom: req.body.auteur },
       });
       if (!auteurData) {
-        // Créer l'auteur si non existant. Note : le modèle Auteur ne contient que "nom"
         auteurData = await Auteur.create({ nom: req.body.auteur });
       }
-      req.body.auteur_fk = auteurData.auteur_id; // Affecter la clé étrangère
-      delete req.body.auteur; // Supprimer le champ auteur du body
+      req.body.auteur_fk = auteurData.auteur_id;
+      delete req.body.auteur;
     }
 
     if (req.body.categorie) {
@@ -218,17 +232,14 @@ livreRouter.put("/:id", auth, async (req, res) => {
         where: { libelle: req.body.categorie },
       });
       if (!categorieData) {
-        // Créer la catégorie si elle n'existe pas
         categorieData = await Categorie.create({ libelle: req.body.categorie });
       }
-      req.body.categorie_fk = categorieData.categorie_id; // Affecter la clé étrangère
-      delete req.body.categorie; // Supprimer le champ categorie du body
+      req.body.categorie_fk = categorieData.categorie_id;
+      delete req.body.categorie;
     }
 
-    // Mettre à jour le livre avec les données fournies
     await Livre.update(req.body, { where: { livre_id: bookId } });
 
-    // Récupérer le livre mis à jour en incluant les associations
     const updatedBook = await Livre.findByPk(bookId, {
       include: [
         { model: Auteur, as: "auteur", required: false },
@@ -251,31 +262,33 @@ livreRouter.put("/:id", auth, async (req, res) => {
   }
 });
 
-// Route DELETE pour supprimer un livre par ID
 livreRouter.delete("/:id", auth, async (req, res) => {
+  const bookId = req.params.id;
   try {
-    // Rechercher le livre à supprimer par sa clé primaire
-    const book = await Livre.findByPk(req.params.id);
-
-    // Si le livre n'existe pas, retourner une réponse 404
+    const book = await Livre.findByPk(bookId);
     if (!book) {
       return res
         .status(404)
         .json({ message: "Le livre demandé n'existe pas." });
     }
 
-    // Supprimer les enregistrements dépendants dans t_apprecier
+    const utilisateur = await Utilisateur.findByPk(req.userId);
+    if (
+      !utilisateur ||
+      (book.utilisateur_fk !== req.userId && !utilisateur.isAdmin)
+    ) {
+      return res
+        .status(403)
+        .json({ message: "Vous n'avez pas le droit de supprimer ce livre." });
+    }
+
     await Apprecier.destroy({ where: { livre_fk: book.livre_id } });
+    await Livre.destroy({ where: { livre_id: bookId } });
 
-    // Supprimer le livre en utilisant sa clé primaire
-    await Livre.destroy({ where: { livre_id: req.params.id } });
-
-    // Retourner une réponse de succès avec le livre supprimé
     return res.json(
       success(`Le livre "${book.titre}" a bien été supprimé !`, book)
     );
   } catch (error) {
-    // En cas d'erreur lors de la suppression, retourner une réponse 500 avec le message d'erreur
     return res
       .status(500)
       .json({ message: "Le livre n'a pas pu être supprimé.", data: error });
