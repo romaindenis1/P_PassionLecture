@@ -1,18 +1,18 @@
-// Importation du fichier CSS principal pour les styles globaux
+// Import des styles globaux
 import './assets/main.css'
 
-// Importation des fonctions nécessaires de Vue
+// Import de Vue et du composant racine
 import { createApp } from 'vue'
-// Importation du routeur pour gérer la navigation entre les pages
-import router from './router'
-// Importation du composant racine de l'application
 import App from './App.vue'
 
-// Création de l'application Vue à partir du composant racine
+// Import du routeur de l'application
+import router from './router'
+
+// Création de l'application Vue
 const app = createApp(App)
 
-// Ajout du routeur à l'application pour activer la navigation
+// Activation du routeur
 app.use(router)
 
-// Montage de l'application sur l'élément HTML avec l'id "app"
+// Montage de l'application dans l'élément HTML #app
 app.mount('#app')

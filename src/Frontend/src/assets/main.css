@@ -1,5 +1,4 @@
-/* Style générale */
-
+/* Style général */
 * {
   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
@@ -15,13 +14,13 @@ body {
   font-weight: normal;
 }
 
-/* Style des titres */
+/* Titres */
 h1,
 h2 {
   color: rgb(184, 0, 0);
 }
 
-/* Style bar de navigation */
+/* Boutons */
 button {
   background-color: hsla(0, 100%, 36%, 0.2);
   color: white;
@@ -38,6 +37,7 @@ button:hover {
   background-color: rgb(184, 0, 0);
 }
 
+/* Barre de navigation */
 #navBar {
   background-color: rgb(36, 36, 36);
   color: white;
@@ -49,6 +49,7 @@ button:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Liens */
 a {
   color: white;
   text-decoration: none;
@@ -70,6 +71,7 @@ a:not(button a),
   }
 }
 
+/* Mise en page pour les grands écrans */
 @media (min-width: 1024px) {
   body {
     display: flex;
@@ -82,7 +84,7 @@ a:not(button a),
   }
 }
 
-/* Style des livres */
+/* Cartes de livre */
 #livre-card {
   border-radius: 3%;
 }
@@ -94,6 +96,7 @@ a:not(button a),
   justify-items: start;
 }
 
+/* Conteneur fixé pour pages longues */
 .fixed-container {
   position: fixed;
   top: 0;
@@ -110,7 +113,7 @@ a:not(button a),
   background-color: rgb(24, 24, 24);
 }
 
-/* Style du footer */
+/* Footer et paragraphes */
 p,
 footer {
   color: rgb(184, 0, 0);

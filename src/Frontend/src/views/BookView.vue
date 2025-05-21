@@ -1,24 +1,25 @@
 <script setup>
-// Importation des modules nécessaires
 import { onMounted, ref } from 'vue'
 import { api } from '../services/api'
 import BookCard from '../components/BookCard.vue'
 import { useRoute, useRouter } from 'vue-router'
 import Comment from '@/components/Comment.vue'
 import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
 
-// Déclaration des variables réactives
+// Données réactives
 const livre = ref([]) // Détails du livre
 const comments = ref([]) // Liste des commentaires
 const loading = ref(true) // Indicateur de chargement
 const error = ref('') // Message d'erreur
-const commentInput = ref('') // Champ de saisie pour les commentaires
+const commentInput = ref('') // Contenu du champ de commentaire
 
-const route = useRoute() // Récupération des paramètres de la route
-const router = useRouter() // Utilisation du routeur pour naviguer
-const id = route.params.id // ID du livre
+// Accès aux informations de la route
+const route = useRoute()
+const router = useRouter()
+const id = route.params.id // ID du livre depuis l'URL
 
-// Chargement des données du livre et des commentaires lors du montage du composant
+// Chargement des données du livre et des commentaires au montage
 onMounted(async () => {
   try {
     const bookResponse = await api.get(`/livres/${id}`)
@@ -34,7 +35,7 @@ onMounted(async () => {
   }
 })
 
-// Fonction pour soumettre un commentaire
+// Envoi d’un nouveau commentaire
 const submitComment = async () => {
   if (!commentInput.value.trim()) {
     error.value = 'Le commentaire ne peut pas être vide'
@@ -62,12 +63,15 @@ const submitComment = async () => {
 </script>
 
 <template>
-  <Header></Header>
+  <Header></Header> />
+
   <h1>Liste des Livres</h1>
-  <!-- Gestion des états de chargement et des erreurs -->
+
+  <!-- État de chargement ou erreur -->
   <p v-if="loading">Chargement...</p>
   <p v-if="error" class="error">{{ error }}</p>
-  <!-- Affichage des détails du livre -->
+
+  <!-- Affichage du livre -->
   <div v-if="!loading && livre">
     <BookCard :livre="livre" />
   </div>
@@ -84,7 +88,7 @@ const submitComment = async () => {
     <button @click="submitComment">Envoyer</button>
   </div>
 
-  <!-- Commentaires -->
+  <!-- Section des commentaires -->
   <div v-if="!loading">
     <h2>Commentaires</h2>
 
@@ -98,9 +102,5 @@ const submitComment = async () => {
       </div>
     </div>
   </div>
-
-  <!-- Liste des commentaires -->
-  <div v-for="comment in comments" :key="comment.id">
-    <Comment :comment="comment" />
-  </div>
+  <Footer></Footer>
 </template>

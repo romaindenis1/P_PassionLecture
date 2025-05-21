@@ -1,5 +1,4 @@
 <script setup>
-// Importation des modules nécessaires
 import { onMounted, ref } from 'vue'
 import { api } from '../services/api'
 import LivreCard from '../components/LivreCard.vue'
@@ -8,21 +7,21 @@ import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import CategorieFiltre from '../components/CategorieFiltre.vue'
 
-// Déclaration des variables réactives
-const livres = ref([]) // Liste des livres
-const loading = ref(true) // Indicateur de chargement
-const error = ref('') // Message d'erreur
-const success = ref('') // Message de confirmation
+// États réactifs pour les livres, le chargement, les erreurs, et les messages
+const livres = ref([])
+const loading = ref(true)
+const error = ref('')
+const success = ref('')
 
-const route = useRoute() // Récupération des paramètres de la route
-const router = useRouter() // Pour revenir en arrière
-const id = route.params.id // ID de la catégorie
+const route = useRoute()
+const router = useRouter()
+const id = route.params.id // ID de la catégorie actuelle
 
-// Chargement des livres de la catégorie lors du montage du composant
+// Chargement des livres de la catégorie sélectionnée
 onMounted(async () => {
   try {
     const response = await api.get(`/categories/${id}/livres`)
-    livres.value = response.data.books || [] // Récupération des livres
+    livres.value = response.data.books || []
   } catch (err) {
     error.value = 'Erreur lors du chargement des livres'
     console.error(err)
@@ -31,14 +30,14 @@ onMounted(async () => {
   }
 })
 
-// Fonction pour filtrer les livres par catégorie
+// Filtrage par une nouvelle catégorie, avec retour après succès
 const filterBooksByCategory = async (categoryId) => {
   try {
     const response = await api.get(`/categories/${categoryId}/livres`)
     livres.value = response.data.books || []
     success.value = 'Livres filtrés avec succès ✅'
 
-    // Attendre 1.5 seconde puis revenir à la page précédente
+    // Retour automatique à la page précédente après un court délai
     setTimeout(() => {
       router.back()
     }, 1500)
@@ -52,32 +51,32 @@ const filterBooksByCategory = async (categoryId) => {
 <template>
   <div id="page">
     <div class="fixed-container">
-      <Header />
+      <Header></Header> />
 
-      <!-- Composant pour filtrer les livres par catégorie -->
       <CategorieFiltre @filterBooks="filterBooksByCategory" />
 
       <h1>Liste des Livres</h1>
 
-      <!-- Messages -->
+      <!-- Messages système -->
       <p v-if="loading">Chargement...</p>
       <p v-if="error" class="error">{{ error }}</p>
       <p v-if="success" class="success">{{ success }}</p>
 
-      <!-- Affichage des livres -->
+      <!-- Grille des livres -->
       <div v-if="!loading && livres.length" class="livres-grid">
         <LivreCard v-for="livre in livres" :key="livre.livre_id" :livre="livre" />
       </div>
 
-      <!-- Message si aucun livre n'est trouvé -->
+      <!-- Aucun résultat -->
       <p v-if="!loading && livres.length === 0">Aucun livre trouvé.</p>
 
-      <Footer />
+      <Footer></Footer>/>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* Conteneur principal */
 .livres-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -85,11 +84,13 @@ const filterBooksByCategory = async (categoryId) => {
   margin-top: 1rem;
 }
 
+/* Conteneur fixe pour le header et le footer */
 .error {
   color: red;
   margin-top: 1rem;
 }
 
+/* Message d'erreur */
 .success {
   color: green;
   margin-top: 1rem;

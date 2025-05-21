@@ -1,9 +1,9 @@
 <script setup>
-// Aucun script spécifique n'est nécessaire ici car ce composant sert de conteneur principal
+// Aucun script requis : ce composant agit uniquement comme conteneur pour le router
 </script>
 
 <template>
-  <!-- Le composant <router-view> rend dynamiquement le composant correspondant à la route actuelle -->
-  <!-- La clé est définie sur le chemin complet de la route pour forcer le rechargement du composant si nécessaire -->
-  <router-view :key="$route.fullPath"></router-view>
+  <!-- Affiche dynamiquement le composant correspondant à la route actuelle -->
+  <!-- La clé force le rechargement du composant si le chemin change -->
+  <router-view :key="$route.fullPath" />
 </template>

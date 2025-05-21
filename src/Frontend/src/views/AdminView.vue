@@ -7,34 +7,36 @@ import Footer from '../components/Footer.vue'
 
 const router = useRouter()
 
-const utilisateurs = ref([])
-const livres = ref([])
-const error = ref('')
-const loading = ref(true)
+// Données réactives
+const utilisateurs = ref([]) // Liste des utilisateurs
+const livres = ref([]) // Liste des livres
+const error = ref('') // Message d’erreur
+const loading = ref(true) // Indicateur de chargement
 
+// Vérification des droits d’accès à la page admin
 const isAuthenticated = sessionStorage.getItem('auth') === 'true'
 const isAdmin = sessionStorage.getItem('isAdmin') === '1'
 
+// Chargement des données admin
 onMounted(async () => {
   if (!isAuthenticated || !isAdmin) {
-    router.push('/') // redirection si non-admin
+    router.push('/') // Redirige si l'utilisateur n'est pas admin
     return
   }
 
   try {
     const res = await api.get('/admin/data')
-    console.log('Données reçues:', res.data)
     utilisateurs.value = res.data.utilisateurs
     livres.value = res.data.livres
   } catch (err) {
     console.error('Erreur admin/data:', err)
-    console.error(err)
     error.value = 'Erreur lors du chargement des données admin.'
   } finally {
     loading.value = false
   }
 })
 
+// Suppression d’un livre (avec confirmation)
 const supprimerLivre = async (livreId) => {
   if (!confirm('Voulez-vous vraiment supprimer ce livre ?')) return
   try {
@@ -47,13 +49,18 @@ const supprimerLivre = async (livreId) => {
 </script>
 
 <template>
-  <Header />
+  <Header></Header>/>
+
   <main class="admin-container">
     <h1>Page d’administration</h1>
+
+    <!-- Affichage d’un message de chargement -->
     <p v-if="loading">Chargement...</p>
+
+    <!-- Message d’erreur éventuel -->
     <p v-if="error" class="error">{{ error }}</p>
 
-    <!-- Liste des utilisateurs -->
+    <!-- Table des utilisateurs -->
     <section v-if="!loading">
       <h2>Utilisateurs</h2>
       <table>
@@ -74,7 +81,7 @@ const supprimerLivre = async (livreId) => {
       </table>
     </section>
 
-    <!-- Liste des livres -->
+    <!-- Table des livres -->
     <section v-if="!loading" style="margin-top: 2rem">
       <h2>Livres</h2>
       <table>
@@ -82,7 +89,6 @@ const supprimerLivre = async (livreId) => {
           <tr>
             <th>ID</th>
             <th>Titre</th>
-
             <th>Ajouté par</th>
             <th>Actions</th>
           </tr>
@@ -91,7 +97,6 @@ const supprimerLivre = async (livreId) => {
           <tr v-for="l in livres" :key="l.livre_id">
             <td>{{ l.livre_id }}</td>
             <td>{{ l.titre }}</td>
-
             <td>{{ l.utilisateur?.username || 'N/A' }}</td>
             <td>
               <router-link :to="`/modify-book/${l.livre_id}`">
@@ -104,17 +109,23 @@ const supprimerLivre = async (livreId) => {
       </table>
     </section>
   </main>
-  <Footer />
+
+  <Footer></Footer> />
 </template>
 
 <style scoped>
+/* Style du conteneur principal de la page d'administration */
 .admin-container {
   padding: 2rem;
 }
+
+/* Style des titres */
 table {
   width: 100%;
   border-collapse: collapse;
 }
+
+/* Style des cellules de la table */
 th,
 td {
   padding: 8px 12px;
@@ -122,18 +133,25 @@ td {
   text-align: left;
   color: white;
 }
+
+/* Style des lignes de la table */
 th {
   background-color: #f3f3f3;
   color: black;
 }
+
+/* Style des lignes de la table */
 button {
   margin-right: 5px;
 }
+
+/* Style des boutons */
 .error {
   color: red;
   margin: 1rem 0;
 }
 
+/* Style des boutons */
 .success {
   border-radius: 3%;
 }
