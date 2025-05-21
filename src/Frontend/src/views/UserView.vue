@@ -65,16 +65,7 @@ watch(
   },
 )
 
-// Filtrage des livres (via composant externe, optionnel ici)
-const filterBooksByCategory = async (categoryId) => {
-  try {
-    const response = await api.get(`/categories/${categoryId}/livres`)
-    livres.value = response.data.data
-  } catch (err) {
-    error.value = 'Erreur lors du filtrage des livres'
-    console.error(err)
-  }
-}
+const isAdmin = computed(() => sessionStorage.getItem('isAdmin') === '1')
 
 // Suppression d’un livre
 const supprimerLivre = async (livreId) => {
@@ -111,7 +102,8 @@ const supprimerLivre = async (livreId) => {
       <LivreCard :livre="livre" />
 
       <!-- Boutons de modification/suppression si propriétaire -->
-      <div class="actions" v-if="isOwner">
+      <!-- Dans le template -->
+      <div class="actions" v-if="isOwner || isAdmin">
         <router-link :to="`/modify-book/${livre.livre_id}`">
           <button>Modifier</button>
         </router-link>

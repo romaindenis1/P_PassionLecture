@@ -36,12 +36,10 @@ const logout = async () => {
 
 <template>
   <header>
-    <!-- Logo / Titre avec lien vers la page d'accueil -->
     <h1>
       <router-link to="/">Passion Lecture</router-link>
     </h1>
 
-    <!-- Boutons selon le statut d'authentification -->
     <template v-if="!isAuthenticated">
       <router-link to="/login"><button>Se connecter</button></router-link>
       <router-link to="/signup"><button>Créer un compte</button></router-link>
@@ -49,12 +47,7 @@ const logout = async () => {
 
     <template v-else>
       <button @click="logout">Déconnexion</button>
-
-      <!-- Lien vers l'espace admin ou espace utilisateur -->
-      <router-link v-if="isAdmin" to="/admin">
-        <button>Mon compte</button>
-      </router-link>
-      <router-link v-else-if="userId" :to="`/users/${userId}/livres`">
+      <router-link :to="isAdmin ? '/admin' : `/users/${userId}/livres`">
         <button>Mon compte</button>
       </router-link>
     </template>
