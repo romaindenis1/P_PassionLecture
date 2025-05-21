@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps({
   modelValue: { type: Number, default: 0 },
