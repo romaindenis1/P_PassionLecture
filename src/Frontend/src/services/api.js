@@ -1,17 +1,17 @@
-// Importation de la bibliothèque axios pour effectuer des requêtes HTTP
 import axios from 'axios'
 
-// Création d'une instance axios avec une configuration par défaut
+// Instance axios configurée pour communiquer avec le backend
 export const api = axios.create({
-  baseURL: 'http://localhost:3000', // URL de base pour les requêtes vers le backend
-  withCredentials: true, // Permet d'envoyer les cookies avec les requêtes (utile pour l'authentification)
+  baseURL: 'http://localhost:3000',
+  withCredentials: true,
 })
 
-// Ajoute cette fonction :
+// Récupère l'ID d'un auteur à partir de son nom
 export function getAuthorIdByName(nom) {
-  return api.get(`/auteurs/getAuthorIdByName`, { params: { nom } })
+  return api.get('/auteurs/getAuthorIdByName', { params: { nom } })
 }
 
+// Crée un nouvel auteur
 export function createAuthor(nom) {
   return api.post('/auteurs', { nom })
 }
