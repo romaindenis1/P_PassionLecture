@@ -63,7 +63,7 @@ const submitComment = async () => {
 </script>
 
 <template>
-  <Header></Header> />
+  <Header></Header>
 
   <h1>Liste des Livres</h1>
 
