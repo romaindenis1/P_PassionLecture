@@ -41,7 +41,7 @@ const login = async () => {
 </script>
 
 <template>
-  <div>
+  <div class="login-container">
     <h1>Se connecter</h1>
 
     <!-- Formulaire de connexion -->
@@ -65,6 +65,62 @@ const login = async () => {
     <!-- Lien vers l'inscription -->
     <p>Pas encore inscrit ? <a href="/signup">Créer un compte</a></p>
 
-    <Footer></Footer> />
+    <Footer></Footer>
   </div>
 </template>
+
+<style scoped>
+h1 {
+  color: #ddd;
+}
+
+.login-container {
+  max-width: 350px;
+  margin: 2rem auto;
+  padding: 2rem 1.5rem 1rem 1.5rem;
+  border-radius: 8px;
+  background: hsla(0, 100%, 36%, 0.2);
+}
+
+form > div {
+  margin-bottom: 1rem;
+}
+
+label,
+p {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #ddd;
+}
+
+input[type='text'],
+input[type='password'] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+button[type='submit'] {
+  background: #b80000;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button[type='submit']:hover {
+  background: hsla(0, 100%, 36%, 0.2);
+}
+
+p {
+  margin-top: 1rem;
+  text-align: center;
+}
+</style>

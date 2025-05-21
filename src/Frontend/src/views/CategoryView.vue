@@ -79,8 +79,7 @@ const filterBooksByCategory = async (categoryId) => {
 /* Conteneur principal */
 .livres-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+  gap: 10rem;
   margin-top: 1rem;
 }
 

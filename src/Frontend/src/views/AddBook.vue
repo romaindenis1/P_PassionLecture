@@ -27,6 +27,4 @@ export default {
 }
 </script>
 
-<style scoped>
-/* Aucun style spécifique pour cette page */
-</style>
+<style scoped></style>

@@ -87,12 +87,14 @@ a:not(button a),
 /* Cartes de livre */
 #livre-card {
   border-radius: 3%;
+  margin: 1rem;
+  margin-bottom: 2rem;
 }
 
 .livres-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
+  gap: 2.5rem; /* Espace entre les livres */
   justify-items: start;
 }
 

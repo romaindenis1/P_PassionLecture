@@ -42,6 +42,7 @@ defineProps({
   gap: 16px;
   margin: 3% 0 3% 3%;
   border-radius: 3%;
+  margin-bottom: 2rem; /* Ajoute un espace vertical entre les livres */
 }
 
 /* Image de couverture */
