@@ -31,7 +31,7 @@ const login = async () => {
     if (user.isAdmin) {
       router.push('/admin')
     } else {
-      router.push(`/users/${user.utilisateur_id}`)
+      router.push(`/users/${user.utilisateur_id}/livres`)
     }
   } catch (error) {
     message.value = 'Échec de la connexion'
