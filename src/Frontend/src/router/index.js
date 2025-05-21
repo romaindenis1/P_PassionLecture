@@ -1,7 +1,7 @@
-// Importation des modules nécessaires pour créer un routeur Vue
+// Importation des outils de routage de Vue
 import { createRouter, createWebHistory } from 'vue-router'
 
-// Importation des composants Vue utilisés comme vues pour les routes
+// Importation des vues utilisées dans les routes
 import AccueilView from '@/views/AccueilView.vue'
 import CategoryView from '@/views/CategoryView.vue'
 import RegisterView from '@/views/RegisterView.vue'
@@ -12,59 +12,68 @@ import ModifyBookView from '@/views/ModifyView.vue'
 import AjouterLivre from '@/components/AddBook.vue'
 import AdminView from '@/views/AdminView.vue'
 
-
-// Création du routeur avec un historique basé sur le Web
+// Création du routeur avec historique HTML5
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL), // Utilisation de l'historique HTML5
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/', // Chemin racine
-      redirect: '/livres', // Redirection vers la route '/livres'
+      // Route par défaut
+      path: '/',
+      redirect: '/livres',
     },
     {
-      path: '/livres', // Route pour afficher la liste des livres
-      name: 'accueil', // Nom de la route
-      component: AccueilView, // Composant associé
-      meta: { requiresAuth: true }, // Métadonnée indiquant que l'authentification est requise
+      // Route pour la page d'accueil
+      path: '/livres',
+      name: 'accueil',
+      component: AccueilView,
+      meta: { requiresAuth: true },
     },
     {
-      path: '/add', // Route pour ajouter un livre
-      name: 'add', // Nom de la route
-      component: AjouterLivre, // Composant associé
+      // Route pour la page d'ajout de livre
+      path: '/add',
+      name: 'add',
+      component: AjouterLivre,
     },
     {
-      path: '/categories/:id/livres', // Route pour afficher les livres d'une catégorie spécifique
-      name: 'CategoryBooks', // Nom de la route
-      component: CategoryView, // Composant associé
-      props: true, // Les paramètres de la route sont passés comme props au composant
+      // Route pour la page de catégorie
+      path: '/categories/:id/livres',
+      name: 'CategoryBooks',
+      component: CategoryView,
+      props: true,
     },
     {
-      path: '/login', // Route pour la page de connexion
-      name: 'login', // Nom de la route
-      component: LoginView, // Composant associé
+      // Route pour la page de connexion
+      path: '/login',
+      name: 'login',
+      component: LoginView,
     },
     {
-      path: '/signup', // Route pour la page d'inscription
-      name: 'signup', // Nom de la route
-      component: RegisterView, // Composant associé
+      // Route pour la page d'inscription
+      path: '/signup',
+      name: 'signup',
+      component: RegisterView,
     },
     {
-      path: '/livres/:id', // Route pour afficher les détails d'un livre spécifique
-      name: 'livre', // Nom de la route
-      component: BookView, // Composant associé
+      // Route pour la page de détails d'un livre
+      path: '/livres/:id',
+      name: 'livre',
+      component: BookView,
     },
     {
-      path: '/users/:id/livres', // Route pour afficher les livres d'un utilisateur spécifique
-      name: 'usersLivres', // Nom de la route
-      component: UserView, // Composant associé
+      // Route pour la page de détails d'un utilisateur
+      path: '/users/:id/livres',
+      name: 'usersLivres',
+      component: UserView,
     },
     {
+      // Route pour la page d'administration
       path: '/admin',
-      name: 'AdminPage', // Nom de la route
-      component: AdminView, // Chargement dynamique du composant pour la page admin
-      meta: { requiresAuth: true, isAdmin: true }, // Métadonnées indiquant que l'authentification et les droits d'administrateur sont requis
+      name: 'AdminPage',
+      component: AdminView,
+      meta: { requiresAuth: true, isAdmin: true },
     },
     {
+      // Route pour la page de modification d'un livre
       path: '/modify-book/:livre_id',
       name: 'modifyBook',
       component: ModifyBookView,
@@ -73,5 +82,4 @@ const router = createRouter({
   ],
 })
 
-// Exportation du routeur pour l'utiliser dans l'application Vue
 export default router
