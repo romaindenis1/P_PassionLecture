@@ -167,6 +167,12 @@ const LivreModel = (sequelize, DataTypes) => {
         },
       },
       resume: { type: DataTypes.TEXT, allowNull: true },
+
+      livre: {
+        type: DataTypes.BLOB("long"),
+        allowNull: true,
+      },
+
       utilisateur_fk: {
         type: DataTypes.INTEGER,
         allowNull: true,
