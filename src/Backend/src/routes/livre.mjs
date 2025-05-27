@@ -47,9 +47,12 @@ defineRelations({
 // Route GET pour récupérer tous les livres
 livreRouter.get("/", async (req, res) => {
   try {
-    // Rechercher tous les livres en incluant les associations Auteur et Catégorie
+    // Find all books but exclude the 'livre' (EPUB) field
     const books = await Livre.findAll({
       limit: 5,
+      attributes: {
+        exclude: ['livre'] // Exclude the EPUB content to reduce response size
+      },
       include: [
         { model: Auteur, as: "auteur" },
         { model: Categorie, as: "categorie" },
@@ -61,15 +64,12 @@ livreRouter.get("/", async (req, res) => {
       ],
     });
 
-    // Si aucun livre n'est trouvé, retourner une réponse 404
     if (books.length === 0) {
       return res.status(404).json({ message: "Aucun livre trouvé." });
     }
 
-    // Retourner la liste des livres avec un message de succès
     return res.json(success("Liste des livres récupérée avec succès.", books));
   } catch (error) {
-    // En cas d'erreur, l'afficher dans la console et retourner une réponse 500 avec le message d'erreur
     console.error("Erreur lors de la récupération des livres :", error);
     return res.status(500).json({
       message: "Impossible de récupérer les livres.",
@@ -78,13 +78,12 @@ livreRouter.get("/", async (req, res) => {
   }
 });
 
-// Route GET pour récupérer un livre spécifique par ID
+// Route GET for getting a specific book with its EPUB content
 livreRouter.get("/:id", async (req, res) => {
   try {
-    // Convertir l'ID reçu en entier
     const id = parseInt(req.params.id, 10);
-    // Rechercher le livre par clé primaire en incluant les associations Auteur et Catégorie (non obligatoires)
     const book = await Livre.findByPk(id, {
+      // Include all fields including 'livre' (EPUB content)
       include: [
         { model: Auteur, as: "auteur", required: false },
         { model: Categorie, as: "categorie", required: false },
@@ -97,19 +96,16 @@ livreRouter.get("/:id", async (req, res) => {
       ],
     });
 
-    // Si le livre n'est pas trouvé, retourner une réponse 404
     if (!book) {
-      return res
-        .status(404)
-        .json({ message: "Le livre demandé n'existe pas." });
+      return res.status(404).json({ 
+        message: "Le livre demandé n'existe pas." 
+      });
     }
 
-    // Retourner le livre trouvé avec un message de succès
     return res.json(
       success(`Le livre dont l'id vaut ${id} a bien été récupéré.`, book)
     );
   } catch (error) {
-    // En cas d'erreur, l'afficher dans la console et retourner une réponse 500 avec le message d'erreur
     console.error("Erreur lors de la récupération du livre :", error);
     return res.status(500).json({
       message: "Le livre n'a pas pu être récupéré.",
